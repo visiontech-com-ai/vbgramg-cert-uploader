@@ -1,0 +1,38 @@
+{
+  "manifest_version": 3,
+  "name": "VB-G RAM G Certificate Auto-Fill",
+  "version": "1.0.0",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAmcwtfNesI4Hrz9uLBDOuXfWuA1wf/UvZ+BU1bthK+WURLaV+UehqVFtsj08DnEMlU5g1Aj3UgNadxzn4Lo+J/4sAGmIfKA7QbbMWZZmFpLRmvs/OuiOcj4UQubmpGO0taPP7k5OKW1q5XNTVmFBDTpZg5q3ZxNcDsmWgH3dRulHKsm9fMJGiwPht30n528EOMbzaDNcon+axFXBw0uWnE+VPA/sVuceX6k2uSUUFaBhLXJG0kyt1YxDTobNBPSRqNNo8vKeEHVL9AklrpsWsegLMwsz6CQaJgdTV9w5sSr4HtBNhUsNQJDABKZS2Q3DTIuCq8MgXkrlPdHsisz+2SwIDAQAB",
+  "description": "Fills all 8 certificate blocks (signing-authority details + PDF uploads) on the VB-G RAM G Work Entry page in one click.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "permissions": ["storage"],
+  "action": {
+    "default_popup": "options.html",
+    "default_title": "Certificate Auto-Fill — signing details",
+    "default_icon": { "16": "icons/icon16.png", "48": "icons/icon48.png", "128": "icons/icon128.png" }
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.dord.gov.in/vbgramg/work_entry.aspx*"
+      ],
+      "js": ["lib/pdf.min.js", "lib/pdf.worker.min.js", "lib/jspdf.umd.min.js", "content.js"],
+      "run_at": "document_idle",
+      "all_frames": true
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["lib/pdf.worker.min.js"],
+      "matches": ["https://*.dord.gov.in/*"]
+    }
+  ]
+}

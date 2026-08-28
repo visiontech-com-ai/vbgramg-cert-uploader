@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Certificate Auto-Fill — Install &amp; Use Guide</title>
+<style>
+  :root{
+    --blue:#224aaa; --blue2:#0A66C2; --ink:#1a1f2e; --muted:#5b6472;
+    --line:#dce1ea; --bg:#eef1f7; --ok:#137333; --warn:#9a6700;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);
+    background:var(--bg);line-height:1.5;font-size:15px;
+  }
+  .sheet{max-width:900px;margin:0 auto;padding:24px}
+  /* header */
+  .top{
+    display:flex;align-items:center;gap:14px;background:var(--blue);color:#fff;
+    border-radius:14px;padding:18px 22px;box-shadow:0 6px 20px rgba(34,74,170,.25)
+  }
+  .top .badge{
+    width:52px;height:52px;flex:0 0 52px;background:#fff;border-radius:12px;
+    display:flex;align-items:center;justify-content:center
+  }
+  .top h1{margin:0;font-size:22px;font-weight:700}
+  .top p{margin:2px 0 0;font-size:13px;opacity:.9}
+  .printbtn{
+    margin-left:auto;background:#fff;color:var(--blue);border:none;border-radius:8px;
+    padding:9px 14px;font-weight:700;font-size:13px;cursor:pointer;white-space:nowrap
+  }
+  .printbtn:hover{background:#eaf0ff}
+  .lead{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:14px 18px;margin:16px 0;font-size:14px
+  }
+  .lead b{color:var(--blue)}
+  /* section */
+  h2{
+    font-size:16px;letter-spacing:.02em;text-transform:uppercase;color:var(--blue);
+    margin:26px 0 12px;padding-bottom:6px;border-bottom:2px solid var(--line)
+  }
+  .step{
+    display:flex;gap:16px;background:var(--card);border:1px solid var(--line);
+    border-radius:12px;padding:16px;margin:12px 0;page-break-inside:avoid;break-inside:avoid
+  }
+  .step .n{
+    flex:0 0 30px;height:30px;background:var(--blue);color:#fff;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px
+  }
+  .step .txt{flex:1;min-width:0}
+  .step .txt h3{margin:2px 0 4px;font-size:15px}
+  .step .txt p{margin:0;color:var(--muted);font-size:13.5px}
+  .step .art{flex:0 0 320px;max-width:320px}
+  .step .art svg{width:100%;height:auto;border-radius:8px;display:block}
+  code,.kbd{
+    background:#eef1f7;border:1px solid #d7deea;border-radius:5px;padding:1px 6px;
+    font-family:Consolas,monospace;font-size:13px;color:#243
+  }
+  .note{
+    background:#fef7e0;border:1px solid #f5e2a3;color:#6b5300;border-radius:10px;
+    padding:12px 14px;font-size:13.5px;margin:12px 0
+  }
+  .good{background:#e6f4ea;border-color:#bfe3c9;color:#1c5b30}
+  table{width:100%;border-collapse:collapse;background:var(--card);
+    border:1px solid var(--line);border-radius:10px;overflow:hidden;font-size:13.5px}
+  th,td{padding:8px 12px;border-bottom:1px solid var(--line);text-align:left}
+  th{background:#f2f5fb;color:var(--blue);font-size:12px;text-transform:uppercase;letter-spacing:.03em}
+  td.b{width:44px;text-align:center;font-weight:700;color:var(--blue)}
+  tr:last-child td{border-bottom:none}
+  .two-col{display:flex;gap:16px;flex-wrap:wrap}
+  .two-col>div{flex:1;min-width:260px}
+  .foot{color:var(--muted);font-size:12px;text-align:center;margin:22px 0 6px}
+  .edge{font-size:13px;color:var(--muted);margin:8px 0 0}
+  @media print{
+    body{background:#fff;font-size:12px}
+    .sheet{max-width:none;padding:0}
+    .printbtn{display:none}
+    .top{box-shadow:none;border-radius:0}
+    .step,.lead,table{box-shadow:none}
+    h2{page-break-after:avoid}
+    .partB{page-break-before:always}
+    .partC{page-break-before:always}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+
+  <div class="top">
+    <div class="badge">
+      <svg width="34" height="34" viewBox="0 0 34 34"><rect width="34" height="34" rx="8" fill="#224aaa"/><path d="M8 18 l6 6 l12 -14" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div>
+      <h1>Certificate Auto-Fill</h1>
+      <p>VB-G RAM G · Work Entry — install &amp; use guide</p>
+    </div>
+    <button class="printbtn" onclick="window.print()">🖨 Print this page</button>
+  </div>
+
+  <div class="lead">
+    This add-on fills the <b>8 certificate blocks</b> on the Work Entry page in
+    one click — the same Name / Designation / Department / Mobile / Email in every
+    block, and it attaches your 8 certificate PDFs. You type your details
+    <b>once</b> in the extension’s settings; the browser remembers them. The
+    <b>DPR</b> and <b>Convergence</b> blocks are set to <b>Yes</b> automatically so
+    their uploads are included.
+  </div>
+
+  <!-- ============ PART A : INSTALL ============ -->
+  <h2>Part A · Install once (about 1 minute)</h2>
+
+  <div class="step">
+    <div class="n">1</div>
+    <div class="txt">
+      <h3>Save the folder somewhere permanent</h3>
+      <p>Copy the <code>vbg-cert-autofill</code> folder to a fixed place, e.g.
+      <code>C:\VBG\vbg-cert-autofill</code>. <b>Do not delete or move it</b> after
+      installing — the browser reads the add-on from this folder every time.</p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 150">
+        <rect x="0" y="0" width="320" height="150" rx="8" fill="#fff" stroke="#dce1ea"/>
+        <rect x="0" y="0" width="320" height="26" rx="8" fill="#f2f5fb"/>
+        <text x="12" y="17" font-family="Segoe UI" font-size="11" fill="#5b6472">C:\ VBG</text>
+        <!-- folder -->
+        <path d="M40 60 h34 l8 9 h58 a6 6 0 0 1 6 6 v42 a6 6 0 0 1 -6 6 h-100 a6 6 0 0 1 -6 -6 v-51 a6 6 0 0 1 6 -6 z" fill="#ffd479" stroke="#e0a93b"/>
+        <text x="46" y="132" font-family="Segoe UI" font-size="11" fill="#1a1f2e">vbg-cert-autofill</text>
+        <!-- files inside -->
+        <rect x="170" y="60" width="120" height="18" rx="3" fill="#eef1f7"/><text x="176" y="73" font-size="10" font-family="Consolas" fill="#243">manifest.json</text>
+        <rect x="170" y="82" width="120" height="18" rx="3" fill="#eef1f7"/><text x="176" y="95" font-size="10" font-family="Consolas" fill="#243">content.js</text>
+        <rect x="170" y="104" width="120" height="18" rx="3" fill="#eef1f7"/><text x="176" y="117" font-size="10" font-family="Consolas" fill="#243">icons /</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">2</div>
+    <div class="txt">
+      <h3>Open the Extensions page</h3>
+      <p>In the address bar type <code>chrome://extensions</code> and press
+      <span class="kbd">Enter</span>.<br>
+      <span class="edge">On Microsoft Edge, type <code>edge://extensions</code> instead — every other step is the same.</span></p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 90">
+        <rect x="0" y="0" width="320" height="90" rx="8" fill="#fff" stroke="#dce1ea"/>
+        <circle cx="16" cy="20" r="4" fill="#ff5f57"/><circle cx="30" cy="20" r="4" fill="#febc2e"/><circle cx="44" cy="20" r="4" fill="#28c840"/>
+        <rect x="14" y="40" width="292" height="30" rx="15" fill="#eef1f7" stroke="#224aaa" stroke-width="2"/>
+        <text x="28" y="60" font-family="Consolas" font-size="14" fill="#224aaa">chrome://extensions</text>
+        <rect x="270" y="46" width="30" height="18" rx="4" fill="#224aaa"/><text x="276" y="59" font-size="10" fill="#fff" font-family="Segoe UI">Enter</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">3</div>
+    <div class="txt">
+      <h3>Turn on Developer mode</h3>
+      <p>Find the <b>Developer mode</b> switch (top-right in Chrome, left side in
+      Edge) and turn it <b>ON</b>. New buttons appear.</p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 90">
+        <rect x="0" y="0" width="320" height="90" rx="8" fill="#fff" stroke="#dce1ea"/>
+        <text x="16" y="30" font-family="Segoe UI" font-size="13" fill="#1a1f2e" font-weight="700">Extensions</text>
+        <text x="150" y="30" font-family="Segoe UI" font-size="12" fill="#5b6472">Developer mode</text>
+        <!-- toggle ON -->
+        <rect x="262" y="20" width="44" height="20" rx="10" fill="#224aaa"/>
+        <circle cx="296" cy="30" r="8" fill="#fff"/>
+        <!-- callout -->
+        <rect x="248" y="48" width="66" height="20" rx="5" fill="#fef7e0" stroke="#f5e2a3"/>
+        <text x="256" y="62" font-size="10" fill="#6b5300" font-family="Segoe UI">turn ON</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">4</div>
+    <div class="txt">
+      <h3>Click “Load unpacked” and pick the folder</h3>
+      <p>Click <b>Load unpacked</b>, then select the <code>vbg-cert-autofill</code>
+      folder and choose <b>Select Folder</b>.</p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 130">
+        <rect x="0" y="0" width="320" height="130" rx="8" fill="#fff" stroke="#dce1ea"/>
+        <rect x="16" y="16" width="110" height="30" rx="6" fill="#224aaa"/>
+        <text x="30" y="35" font-size="12" fill="#fff" font-family="Segoe UI">Load unpacked</text>
+        <!-- dialog -->
+        <rect x="40" y="52" width="240" height="66" rx="8" fill="#f8f9fc" stroke="#c7cfdd"/>
+        <text x="52" y="70" font-size="11" fill="#5b6472" font-family="Segoe UI">Select folder</text>
+        <path d="M52 80 h20 l5 5 h34 a4 4 0 0 1 4 4 v14 a4 4 0 0 1 -4 4 h-59 a4 4 0 0 1 -4 -4 v-19 a4 4 0 0 1 4 -4 z" fill="#ffd479" stroke="#e0a93b"/>
+        <text x="120" y="98" font-size="10" fill="#1a1f2e" font-family="Segoe UI">vbg-cert-autofill</text>
+        <rect x="200" y="90" width="72" height="20" rx="5" fill="#224aaa"/><text x="209" y="104" font-size="10" fill="#fff" font-family="Segoe UI">Select Folder</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">5</div>
+    <div class="txt">
+      <h3>Done — you’ll see the blue ✓ icon</h3>
+      <p>The add-on is installed. It only wakes up on the Work Entry page
+      (<code>…/vbgramg/work_entry.aspx</code>) and does nothing on any other website.</p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 70">
+        <rect x="0" y="0" width="320" height="70" rx="8" fill="#fff" stroke="#dce1ea"/>
+        <text x="16" y="40" font-family="Segoe UI" font-size="12" fill="#5b6472">Toolbar</text>
+        <rect x="250" y="20" width="30" height="30" rx="7" fill="#224aaa"/>
+        <path d="M257 35 l5 5 l10 -12" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ============ PART B : NAME PDFs ============ -->
+  <div class="partB"></div>
+  <h2>Part B · Name your certificate PDFs (per scheme)</h2>
+
+  <div class="two-col">
+    <div>
+      <p>The PDFs are different for every scheme — that’s fine. Put all 8 in
+      <b>one folder</b>. Each file just needs its <b>block number 1–8 somewhere in
+      the name</b>. The tool finds the number and ignores scheme codes and years.</p>
+      <div class="note good">
+        These all work and map to the right block:<br>
+        <code>1.pdf</code> · <code>01.pdf</code> · <code>cert-2.pdf</code> ·
+        <code>GP-2026-cert-05.pdf</code> → 5 · <code>3rd non splitting.pdf</code> → 3
+      </div>
+      <div class="art" style="max-width:280px">
+        <svg viewBox="0 0 280 150">
+          <rect x="0" y="0" width="280" height="150" rx="8" fill="#fff" stroke="#dce1ea"/>
+          <rect x="0" y="0" width="280" height="24" rx="8" fill="#f2f5fb"/>
+          <text x="12" y="16" font-size="11" font-family="Segoe UI" fill="#5b6472">📁 Scheme_2026 · Certificates</text>
+          <g font-family="Consolas" font-size="11" fill="#243">
+            <rect x="14" y="34" width="76" height="22" rx="4" fill="#fde8e8"/><text x="22" y="49">01.pdf</text>
+            <rect x="102" y="34" width="76" height="22" rx="4" fill="#fde8e8"/><text x="110" y="49">02.pdf</text>
+            <rect x="190" y="34" width="76" height="22" rx="4" fill="#fde8e8"/><text x="198" y="49">03.pdf</text>
+            <rect x="14" y="62" width="76" height="22" rx="4" fill="#fde8e8"/><text x="22" y="77">04.pdf</text>
+            <rect x="102" y="62" width="76" height="22" rx="4" fill="#fde8e8"/><text x="110" y="77">05.pdf</text>
+            <rect x="190" y="62" width="76" height="22" rx="4" fill="#fde8e8"/><text x="198" y="77">06.pdf</text>
+            <rect x="14" y="90" width="76" height="22" rx="4" fill="#fde8e8"/><text x="22" y="105">07.pdf</text>
+            <rect x="102" y="90" width="76" height="22" rx="4" fill="#fde8e8"/><text x="110" y="105">08.pdf</text>
+          </g>
+          <text x="14" y="132" font-size="10" font-family="Segoe UI" fill="#5b6472">One folder · eight PDFs · numbers 1–8</text>
+        </svg>
+      </div>
+    </div>
+    <div>
+      <table>
+        <tr><th>#</th><th>Certificate</th></tr>
+        <tr><td class="b">1</td><td>Pre-estimation / Feasibility / Utility report</td></tr>
+        <tr><td class="b">2</td><td>No duplication / double-counting (BDO)</td></tr>
+        <tr><td class="b">3</td><td>Non-splitting of work (BDO)</td></tr>
+        <tr><td class="b">4</td><td>Permissible category of MGNREGA (BDO)</td></tr>
+        <tr><td class="b">5</td><td>Beneficiary selection per Para 5 (BDO)</td></tr>
+        <tr><td class="b">6</td><td>DPR preparation <i>(set to Yes automatically)</i></td></tr>
+        <tr><td class="b">7</td><td>Convergence dept clearance <i>(set to Yes automatically)</i></td></tr>
+        <tr><td class="b">8</td><td>Adherence to non-negotiables (BDO)</td></tr>
+      </table>
+      <div class="note">If a file has no number, a keyword also works
+        (<code>split</code>, <code>permissible</code>, <code>benefic</code>…). After
+        you pick the folder, the panel shows which PDF landed in each block, so you
+        can confirm before filling.</div>
+      <div class="note"><b>~1 MB per PDF (server limit).</b> The panel shows every
+        file’s size. Oversized scans are <b>compressed automatically</b> (re-rendered
+        smaller), e.g. <code>3.pdf · 1.80 MB → 0.62 MB ✓</code>. If a file still can’t
+        fit, it’s marked <b>“too big”</b> and <b>Fill is blocked</b> until you replace
+        it with a clearer/smaller scan.</div>
+    </div>
+  </div>
+
+  <!-- ============ PART C : USE ============ -->
+  <div class="partC"></div>
+  <h2>Part C · Fill a work entry</h2>
+
+  <div class="step">
+    <div class="n">1</div>
+    <div class="txt">
+      <h3>Set your signing details once (in the extension)</h3>
+      <p>Click the extension’s <b>icon in the browser toolbar</b> (top-right). A
+      small settings popup opens — type <b>Name, Designation, Department, Mobile,
+      Email</b>. They save automatically and are reused for every work entry.<br>
+      <span class="edge">Icon hidden? Click the puzzle-piece 🧩 <b>Extensions</b>
+      button and pin “Certificate Auto-Fill”.</span></p>
+    </div>
+    <div class="art" style="flex-basis:250px;max-width:250px">
+      <!-- settings popup mockup -->
+      <svg viewBox="0 0 250 224">
+        <rect x="2" y="2" width="246" height="220" rx="10" fill="#fff" stroke="#c7cfdd"/>
+        <rect x="2" y="2" width="246" height="34" rx="10" fill="#224aaa"/>
+        <text x="14" y="18" font-size="11" fill="#fff" font-family="Segoe UI" font-weight="700">Signing authority</text>
+        <text x="14" y="30" font-size="8.5" fill="#cdd8f2" font-family="Segoe UI">Used for all 8 certificate blocks</text>
+        <rect x="14" y="46" width="222" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="20" y="61" font-size="10" fill="#5b6472" font-family="Segoe UI">Name</text>
+        <rect x="14" y="74" width="106" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="20" y="89" font-size="10" fill="#5b6472" font-family="Segoe UI">Designation</text>
+        <rect x="130" y="74" width="106" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="136" y="89" font-size="10" fill="#5b6472" font-family="Segoe UI">Department</text>
+        <rect x="14" y="102" width="106" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="20" y="117" font-size="10" fill="#5b6472" font-family="Segoe UI">Mobile</text>
+        <rect x="130" y="102" width="106" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="136" y="117" font-size="10" fill="#5b6472" font-family="Segoe UI">Email</text>
+        <text x="14" y="140" font-size="10" fill="#137333" font-family="Segoe UI" font-weight="700">Saved ✓</text>
+        <text x="14" y="164" font-size="9" fill="#5b6472" font-family="Segoe UI">Open the Work Entry page to attach</text>
+        <text x="14" y="177" font-size="9" fill="#5b6472" font-family="Segoe UI">the PDFs and fill the form.</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">2</div>
+    <div class="txt">
+      <h3>On Work Entry: choose the folder, then Fill</h3>
+      <p>Open the Work Entry page and pick the Work Category / Heads / Village at
+      the top as usual. The panel appears top-right and shows who you’re signing
+      as.<br>
+      <b>①</b> Click <b>Choose certificate folder</b> — the panel then reveals the
+      1–8 mapping (green ticks show each match).<br>
+      <b>②</b> Click <b>Fill form</b> — DPR &amp; Convergence are set to Yes
+      automatically.</p>
+    </div>
+    <div class="art" style="flex-basis:300px;max-width:300px">
+      <!-- panel mockup: after folder chosen -->
+      <svg viewBox="0 0 300 250">
+        <rect x="4" y="4" width="292" height="242" rx="10" fill="#fff" stroke="#224aaa"/>
+        <rect x="4" y="4" width="292" height="30" rx="10" fill="#224aaa"/>
+        <text x="16" y="24" font-size="12" fill="#fff" font-family="Segoe UI" font-weight="700">VB-G RAM G · Certificate Auto-Fill</text>
+        <!-- signer line -->
+        <rect x="16" y="44" width="268" height="20" rx="6" fill="#eef3fb"/><text x="24" y="57" font-size="9.5" fill="#224aaa" font-family="Segoe UI">Signing as <tspan font-weight="700">A. Kumar, BDO</tspan></text>
+        <text x="16" y="82" font-size="11" fill="#224aaa" font-weight="700" font-family="Segoe UI">Certificates (PDF)</text>
+        <!-- pick button -->
+        <rect x="16" y="90" width="268" height="24" rx="7" fill="#eef2fb" stroke="#224aaa"/>
+        <text x="52" y="106" font-size="10.5" fill="#224aaa" font-family="Segoe UI" font-weight="700">① Choose a different folder…</text>
+        <circle cx="292" cy="102" r="10" fill="#0A66C2"/><text x="288.5" y="106" font-size="11" fill="#fff" font-family="Segoe UI" font-weight="700">1</text>
+        <!-- rows (revealed) -->
+        <g font-family="Segoe UI" font-size="9">
+          <rect x="16" y="122" width="16" height="12" rx="3" fill="#224aaa"/><text x="20" y="131" fill="#fff">1</text>
+          <text x="38" y="131" fill="#1a1f2e">Pre-estimation</text><text x="232" y="131" fill="#137333">01.pdf ✓</text>
+          <rect x="16" y="138" width="16" height="12" rx="3" fill="#224aaa"/><text x="20" y="147" fill="#fff">2</text>
+          <text x="38" y="147" fill="#1a1f2e">No duplication</text><text x="232" y="147" fill="#137333">02.pdf ✓</text>
+          <rect x="16" y="154" width="16" height="12" rx="3" fill="#224aaa"/><text x="20" y="163" fill="#fff">3</text>
+          <text x="38" y="163" fill="#1a1f2e">Non-splitting</text><text x="232" y="163" fill="#137333">03.pdf ✓</text>
+          <text x="38" y="179" fill="#8a8a8a">… blocks 4–8 matched …</text>
+        </g>
+        <!-- fill button -->
+        <rect x="16" y="190" width="268" height="28" rx="7" fill="#0A66C2"/>
+        <text x="118" y="209" font-size="12" fill="#fff" font-family="Segoe UI" font-weight="700">② Fill form</text>
+        <circle cx="292" cy="204" r="10" fill="#0A66C2"/><text x="288.5" y="208" font-size="11" fill="#fff" font-family="Segoe UI" font-weight="700">2</text>
+        <rect x="16" y="224" width="268" height="16" rx="4" fill="#f2f4f8"/><text x="22" y="235" font-size="9" fill="#5b6472" font-family="Segoe UI">8 PDF(s) found · 8/8 matched. Review, then Fill.</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">3</div>
+    <div class="txt">
+      <h3>Done message — mapping closes</h3>
+      <p>On success the panel shows a <b>“Done”</b> message and hides the mapping
+      again, ready for the next work entry.</p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 96">
+        <rect x="0" y="0" width="320" height="96" rx="8" fill="#fff" stroke="#dce1ea"/>
+        <rect x="14" y="16" width="292" height="24" rx="7" fill="#eef2fb" stroke="#224aaa"/><text x="70" y="32" font-size="11" fill="#224aaa" font-family="Segoe UI" font-weight="700">Choose folder for the next entry…</text>
+        <rect x="14" y="48" width="292" height="34" rx="6" fill="#e6f4ea"/><text x="24" y="63" font-size="10" fill="#137333" font-family="Segoe UI" font-weight="700">✓ Done — all 8 blocks filled and 8 PDFs attached.</text>
+        <text x="24" y="76" font-size="10" fill="#137333" font-family="Segoe UI">Review the form and click the page’s Save.</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">4</div>
+    <div class="txt">
+      <h3>Check, then click the page’s own Save</h3>
+      <p>The tool only fills the form — <b>nothing is submitted</b> until you review
+      it and click the Work Entry page’s <b>Save</b> button. You stay in control.</p>
+    </div>
+    <div class="art">
+      <svg viewBox="0 0 320 70">
+        <rect x="0" y="0" width="320" height="70" rx="8" fill="#fff" stroke="#dce1ea"/>
+        <rect x="110" y="20" width="70" height="30" rx="6" fill="#0A66C2"/><text x="132" y="40" font-size="13" fill="#fff" font-family="Segoe UI" font-weight="700">Save</text>
+        <rect x="190" y="20" width="70" height="30" rx="6" fill="#eef1f7" stroke="#c7cfdd"/><text x="208" y="40" font-size="13" fill="#5b6472" font-family="Segoe UI">Reset</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Troubleshooting.</b> Panel missing? Confirm the address ends in
+    <code>work_entry.aspx</code> and the add-on is enabled in
+    <code>chrome://extensions</code>. A block shows “no PDF matched”? Rename that
+    file so its number 1–8 is in the name, then pick the folder again. Oversized
+    scans are compressed automatically; if one still can’t reach ~1 MB it’s marked
+    “too big” and blocks Fill — replace it with a clearer/smaller scan. DPR and
+    Convergence are set to Yes for you; if a work truly needs one as No, change it
+    on the page and remove that file after filling.
+  </div>
+
+  <div class="foot">
+    Runs entirely inside your browser · no data leaves this PC · works in Chrome &amp; Edge
+  </div>
+
+</div>
+</body>
+</html>

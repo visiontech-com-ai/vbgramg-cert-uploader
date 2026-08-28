@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>VB-G RAM G Certificate Auto-Fill</title>
+<meta name="description" content="A Chrome/Edge add-on that fills the 8 certificate blocks on the VB-G RAM G Work Entry page and attaches the PDFs in one click.">
+
+<!-- GA-START : Google Analytics (replace G-XXXXXXXXXX with your Measurement ID) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-XXXXXXXXXX');
+</script>
+<!-- GA-END -->
+
+<style>
+  :root{
+    --blue:#224aaa; --blue2:#0A66C2; --ink:#16203a; --muted:#5b6472;
+    --bg:#eef1f7; --card:#ffffff; --line:#dce1ea; --ok:#137333;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --blue:#5b82e6; --blue2:#4d8ff0; --ink:#e8ecf5; --muted:#a3adc2;
+      --bg:#0f1526; --card:#161d33; --line:#26304d; --ok:#5bd08a;
+    }
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;color:var(--ink);
+    background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:860px;margin:0 auto;padding:28px 22px 60px}
+  .top{display:flex;align-items:center;gap:14px}
+  .badge{width:56px;height:56px;flex:0 0 56px;background:var(--blue);border-radius:14px;
+    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(34,74,170,.3)}
+  h1{font-size:26px;margin:0;font-weight:800;letter-spacing:-.01em}
+  .sub{color:var(--muted);font-size:14px;margin-top:2px}
+  .hero{background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:26px;margin-top:22px;text-align:center;box-shadow:0 10px 30px rgba(20,32,58,.06)}
+  .hero p.lead{font-size:16px;color:var(--ink);max-width:620px;margin:0 auto 20px}
+  .dl{display:inline-flex;align-items:center;gap:10px;background:var(--blue2);color:#fff;
+    text-decoration:none;font-weight:700;font-size:17px;padding:14px 26px;border-radius:12px;
+    box-shadow:0 8px 20px rgba(10,102,194,.35);transition:transform .1s, background .15s}
+  .dl:hover{background:#0952a0;transform:translateY(-1px)}
+  .dl svg{width:20px;height:20px}
+  .meta{margin-top:12px;font-size:13px;color:var(--muted)}
+  .meta b{color:var(--ink)}
+  .count{display:inline-flex;align-items:center;gap:6px}
+  .dot{width:5px;height:5px;border-radius:50%;background:var(--muted);display:inline-block;margin:0 6px;vertical-align:middle}
+  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:26px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
+  .card h3{margin:0 0 6px;font-size:15px;color:var(--blue)}
+  .card p{margin:0;font-size:13.5px;color:var(--muted)}
+  h2{font-size:16px;text-transform:uppercase;letter-spacing:.04em;color:var(--blue);
+    margin:34px 0 12px;border-bottom:2px solid var(--line);padding-bottom:7px}
+  ol.steps{margin:0;padding-left:0;list-style:none;counter-reset:s}
+  ol.steps li{position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line);font-size:14.5px}
+  ol.steps li:last-child{border-bottom:none}
+  ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:9px;
+    width:28px;height:28px;background:var(--blue);color:#fff;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
+  code{background:rgba(34,74,170,.1);border-radius:5px;padding:1px 6px;font-family:Consolas,monospace;font-size:13px}
+  a.inline{color:var(--blue2);font-weight:600}
+  .foot{margin-top:34px;color:var(--muted);font-size:12.5px;text-align:center}
+  .foot a{color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div class="badge">
+      <svg width="34" height="34" viewBox="0 0 34 34"><path d="M8 18 l6 6 l12 -14" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <div>
+      <h1>VB-G RAM G · Certificate Auto-Fill</h1>
+      <div class="sub">Chrome / Edge add-on for the Work Entry page</div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <p class="lead">Fills all <b>8 certificate blocks</b> on the VB-G RAM G Work Entry
+      page in one click — the same signing-authority details in every block — and
+      attaches the certificate PDFs from a folder. Oversized scans are compressed to
+      fit the server’s size limit automatically.</p>
+
+    <a class="dl" id="dl" href="https://github.com/visiontech-com-ai/vbgramg-cert-uploader/releases/latest">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>
+      Download for Chrome / Edge
+    </a>
+
+    <div class="meta">
+      <span id="ver">latest release</span>
+      <span class="dot"></span>
+      <span class="count" id="count">downloads: —</span>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card"><h3>One-click fill</h3><p>The same Name / Designation / Department / Mobile / Email into all 8 blocks, set once in the add-on’s settings.</p></div>
+    <div class="card"><h3>Folder → PDFs</h3><p>Pick a folder; each PDF is matched to its block by the number 1–8 in its name.</p></div>
+    <div class="card"><h3>Auto-compress</h3><p>Scans over the ~1 MB server limit are re-rendered smaller on your PC — nothing is uploaded anywhere.</p></div>
+  </div>
+
+  <h2>Install (about a minute)</h2>
+  <ol class="steps">
+    <li>Download the ZIP above and <b>unzip</b> it to a permanent folder (e.g. <code>C:\VBG\vbg-cert-autofill</code>).</li>
+    <li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>) and turn on <b>Developer mode</b>.</li>
+    <li>Click <b>Load unpacked</b> and select the <code>vbg-cert-autofill</code> folder.</li>
+    <li>Click the add-on’s toolbar icon and enter your signing details once. Then open the Work Entry page and use the panel.</li>
+  </ol>
+  <p style="font-size:14px;margin-top:14px">
+    Full picture guide: <a class="inline" href="vbg-cert-autofill/install-guide.html">open the illustrated install &amp; use guide →</a>
+  </p>
+
+  <div class="foot">
+    Runs entirely in your browser · no data leaves your PC ·
+    <a href="https://github.com/visiontech-com-ai/vbgramg-cert-uploader">source on GitHub</a>
+  </div>
+</div>
+
+<script>
+  (function(){
+    var OWNER = "visiontech-com-ai", REPO = "vbgramg-cert-uploader";
+    var dl = document.getElementById("dl");
+    var countEl = document.getElementById("count");
+    var verEl = document.getElementById("ver");
+    fetch("https://api.github.com/repos/" + OWNER + "/" + REPO + "/releases/latest", {
+      headers: { "Accept": "application/vnd.github+json" }
+    })
+    .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
+    .then(function(rel){
+      if (rel.tag_name) verEl.textContent = rel.tag_name;
+      var asset = (rel.assets || []).filter(function(a){ return /\.zip$/i.test(a.name); })[0];
+      if (asset) {
+        dl.href = asset.browser_download_url;
+        var n = asset.download_count || 0;
+        countEl.textContent = "downloads: " + n.toLocaleString();
+      } else {
+        countEl.textContent = "";
+      }
+    })
+    .catch(function(){ countEl.textContent = ""; });
+  })();
+</script>
+</body>
+</html>

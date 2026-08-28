@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Certificate Auto-Fill — Settings</title>
+<style>
+  :root{--blue:#224aaa;--ink:#1a1f2e;--muted:#5b6472;--line:#c7cfdd;--ok:#137333}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);
+    background:#fff;width:340px;font-size:14px}
+  .hd{background:var(--blue);color:#fff;padding:12px 14px;display:flex;align-items:center;gap:10px}
+  .hd svg{flex:0 0 26px}
+  .hd b{font-size:14px}
+  .hd small{display:block;font-size:11px;opacity:.85;font-weight:400}
+  .bd{padding:14px}
+  .intro{font-size:12.5px;color:var(--muted);margin:0 0 12px;line-height:1.4}
+  .grp{margin-bottom:11px}
+  .grp label{display:block;font-weight:600;font-size:12px;margin-bottom:3px}
+  .grp input{width:100%;padding:7px 8px;border:1px solid var(--line);border-radius:7px;font-size:14px}
+  .grp input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 2px rgba(34,74,170,.15)}
+  .two{display:flex;gap:10px}.two>div{flex:1}
+  .saved{font-size:12px;color:var(--ok);height:16px;margin-top:2px;opacity:0;transition:opacity .2s}
+  .saved.show{opacity:1}
+  .foot{font-size:11.5px;color:var(--muted);border-top:1px solid #eef1f7;margin-top:8px;padding-top:10px;line-height:1.4}
+</style>
+</head>
+<body>
+  <div class="hd">
+    <svg width="26" height="26" viewBox="0 0 34 34"><rect width="34" height="34" rx="8" fill="#1b3a86"/><path d="M8 18 l6 6 l12 -14" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><b>Signing authority</b><small>Used for all 8 certificate blocks</small></div>
+  </div>
+  <div class="bd">
+    <p class="intro">Enter these once. They are saved in this browser and filled
+      into every certificate block on the Work Entry page.</p>
+
+    <div class="grp"><label for="name">Name</label><input id="name" type="text" autocomplete="off"></div>
+    <div class="two">
+      <div class="grp"><label for="desig">Designation</label><input id="desig" type="text" autocomplete="off"></div>
+      <div class="grp"><label for="dept">Department</label><input id="dept" type="text" autocomplete="off"></div>
+    </div>
+    <div class="two">
+      <div class="grp"><label for="mob">Mobile</label><input id="mob" type="text" maxlength="10" autocomplete="off"></div>
+      <div class="grp"><label for="email">Email</label><input id="email" type="text" autocomplete="off"></div>
+    </div>
+    <div class="saved" id="saved">Saved ✓</div>
+
+    <div class="foot">Open the <b>Work Entry</b> page to attach the certificate
+      PDFs and fill the form — the panel there picks up these details automatically.</div>
+  </div>
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,149 +1,424 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>VB-G RAM G Certificate Auto-Fill</title>
-<meta name="description" content="A Chrome/Edge add-on that fills the 8 certificate blocks on the VB-G RAM G Work Entry page and attaches the PDFs in one click.">
+    <meta charset="UTF-8">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-35FFK95HCP"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-35FFK95HCP');
+    </script>
 
-<!-- GA-START : Google Analytics (replace G-XXXXXXXXXX with your Measurement ID) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-  gtag('config', 'G-XXXXXXXXXX');
-</script>
-<!-- GA-END -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VB-G RAM G Certificate Auto-Fill — One-Click Work Entry Certificate Upload | Vision Technologies</title>
+    <meta name="description" content="Free Chrome & Edge add-on for the VB-G RAM G (VBGRAMG) Work Entry page. Fills all 8 certificate blocks and attaches every PDF in one click, and compresses oversized scans automatically. By Vision Technologies and Robotics.">
+    <meta name="keywords" content="vbgramg, vb-g ram g, vbgramg work entry, vbgramg certificate upload, vbgramg work entry certificate, mgnrega certificate upload, work entry permissible, vbgramg pdf upload, vbgramg chrome extension, vbgramg certificate auto fill, viksit bharat rozgar aajeevika, rural development work entry, dord.gov.in work entry, bulk certificate upload vbgramg">
+    <meta name="author" content="Vision Technologies and Robotics">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://visiontech-com-ai.github.io/vbgramg-cert-uploader/">
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Crect width='34' height='34' rx='8' fill='%23224aaa'/%3E%3Cpath d='M8 18l6 6 12-14' fill='none' stroke='%23fff' stroke-width='3.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 
-<style>
-  :root{
-    --blue:#224aaa; --blue2:#0A66C2; --ink:#16203a; --muted:#5b6472;
-    --bg:#eef1f7; --card:#ffffff; --line:#dce1ea; --ok:#137333;
-  }
-  @media (prefers-color-scheme: dark){
-    :root:not([data-theme="light"]){
-      --blue:#5b82e6; --blue2:#4d8ff0; --ink:#e8ecf5; --muted:#a3adc2;
-      --bg:#0f1526; --card:#161d33; --line:#26304d; --ok:#5bd08a;
+    <!-- Open Graph -->
+    <meta property="og:title" content="VB-G RAM G Certificate Auto-Fill — One-Click Work Entry Upload">
+    <meta property="og:description" content="Fills all 8 certificate blocks and attaches every PDF on the VB-G RAM G Work Entry page in one click. Free Chrome & Edge add-on.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://visiontech-com-ai.github.io/vbgramg-cert-uploader/">
+    <meta property="og:locale" content="bn_IN">
+    <meta property="og:locale:alternate" content="en_IN">
+    <meta property="og:locale:alternate" content="hi_IN">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="VB-G RAM G Certificate Auto-Fill">
+    <meta name="twitter:description" content="One-click certificate upload for the VB-G RAM G Work Entry page. Free Chrome & Edge add-on.">
+
+    <!-- Schema.org SoftwareApplication -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "SoftwareApplication",
+        "name": "VB-G RAM G Certificate Auto-Fill",
+        "description": "Chrome and Edge add-on that fills all 8 certificate blocks and attaches the PDFs on the VB-G RAM G (VBGRAMG) Work Entry page in one click, and compresses oversized scans to fit the server's size limit.",
+        "applicationCategory": "BrowserApplication",
+        "operatingSystem": "Windows, macOS, Linux (Google Chrome or Microsoft Edge)",
+        "softwareVersion": "1.0.0",
+        "author": {
+            "@type": "Organization",
+            "name": "Vision Technologies and Robotics",
+            "email": "subho@visiontech.com.in"
+        },
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "INR" },
+        "downloadUrl": "https://github.com/visiontech-com-ai/vbgramg-cert-uploader/releases/latest"
     }
-  }
-  *{box-sizing:border-box}
-  html,body{margin:0}
-  body{font-family:"Segoe UI",system-ui,Arial,sans-serif;color:var(--ink);
-    background:var(--bg);line-height:1.55;-webkit-font-smoothing:antialiased}
-  .wrap{max-width:860px;margin:0 auto;padding:28px 22px 60px}
-  .top{display:flex;align-items:center;gap:14px}
-  .badge{width:56px;height:56px;flex:0 0 56px;background:var(--blue);border-radius:14px;
-    display:flex;align-items:center;justify-content:center;box-shadow:0 6px 18px rgba(34,74,170,.3)}
-  h1{font-size:26px;margin:0;font-weight:800;letter-spacing:-.01em}
-  .sub{color:var(--muted);font-size:14px;margin-top:2px}
-  .hero{background:var(--card);border:1px solid var(--line);border-radius:18px;
-    padding:26px;margin-top:22px;text-align:center;box-shadow:0 10px 30px rgba(20,32,58,.06)}
-  .hero p.lead{font-size:16px;color:var(--ink);max-width:620px;margin:0 auto 20px}
-  .dl{display:inline-flex;align-items:center;gap:10px;background:var(--blue2);color:#fff;
-    text-decoration:none;font-weight:700;font-size:17px;padding:14px 26px;border-radius:12px;
-    box-shadow:0 8px 20px rgba(10,102,194,.35);transition:transform .1s, background .15s}
-  .dl:hover{background:#0952a0;transform:translateY(-1px)}
-  .dl svg{width:20px;height:20px}
-  .meta{margin-top:12px;font-size:13px;color:var(--muted)}
-  .meta b{color:var(--ink)}
-  .count{display:inline-flex;align-items:center;gap:6px}
-  .dot{width:5px;height:5px;border-radius:50%;background:var(--muted);display:inline-block;margin:0 6px;vertical-align:middle}
-  .grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin-top:26px}
-  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px}
-  .card h3{margin:0 0 6px;font-size:15px;color:var(--blue)}
-  .card p{margin:0;font-size:13.5px;color:var(--muted)}
-  h2{font-size:16px;text-transform:uppercase;letter-spacing:.04em;color:var(--blue);
-    margin:34px 0 12px;border-bottom:2px solid var(--line);padding-bottom:7px}
-  ol.steps{margin:0;padding-left:0;list-style:none;counter-reset:s}
-  ol.steps li{position:relative;padding:10px 0 10px 44px;border-bottom:1px dashed var(--line);font-size:14.5px}
-  ol.steps li:last-child{border-bottom:none}
-  ol.steps li::before{counter-increment:s;content:counter(s);position:absolute;left:0;top:9px;
-    width:28px;height:28px;background:var(--blue);color:#fff;border-radius:50%;
-    display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px}
-  code{background:rgba(34,74,170,.1);border-radius:5px;padding:1px 6px;font-family:Consolas,monospace;font-size:13px}
-  a.inline{color:var(--blue2);font-weight:600}
-  .foot{margin-top:34px;color:var(--muted);font-size:12.5px;text-align:center}
-  .foot a{color:var(--muted)}
-</style>
+    </script>
+
+    <!-- FAQPage Schema -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        "mainEntity": [
+            { "@type": "Question", "name": "Is this an official government tool?", "acceptedAnswer": { "@type": "Answer", "text": "No. It is an independent helper made by Vision Technologies and Robotics to speed up repetitive data entry on the VB-G RAM G Work Entry page. It is not affiliated with or endorsed by any government body. You stay in control and click Save yourself." } },
+            { "@type": "Question", "name": "Is it safe and where does my data go?", "acceptedAnswer": { "@type": "Answer", "text": "Everything runs inside your own browser. Your signing details are stored only on your PC, and PDF compression happens locally on your machine — nothing is uploaded to any online service. The full source code is open on GitHub." } },
+            { "@type": "Question", "name": "How should I name the PDF files?", "acceptedAnswer": { "@type": "Answer", "text": "Put all certificate PDFs in one folder and make sure each file name contains its block number 1 to 8 (for example 1.pdf, 02.pdf or cert-3.pdf). The tool matches them automatically and shows you the result before filling." } },
+            { "@type": "Question", "name": "My scan is larger than 1 MB. What happens?", "acceptedAnswer": { "@type": "Answer", "text": "The tool compresses oversized scans automatically so they fit the server's size limit, and shows the new size. If a file still cannot fit, it is flagged and you can replace it with a clearer scan." } },
+            { "@type": "Question", "name": "Do I have to type my details every time?", "acceptedAnswer": { "@type": "Answer", "text": "No. You enter Name, Designation, Department, Mobile and Email once in the add-on's settings. They are remembered across restarts and updates, so every work entry is just choose-folder and Fill." } },
+            { "@type": "Question", "name": "Does it submit the form for me?", "acceptedAnswer": { "@type": "Answer", "text": "No. The tool only fills the fields and attaches the PDFs. You review everything and click the Work Entry page's own Save button yourself." } }
+        ]
+    }
+    </script>
+
+    <style>
+        :root{
+            --primary:#1a56db; --primary-dark:#1e40af; --accent:#f59e0b;
+            --text:#1f2937; --text-light:#6b7280; --bg:#ffffff; --bg-alt:#f3f4f6;
+            --bg-card:#ffffff; --border:#e5e7eb; --success:#10b981;
+            --code-bg:#1e293b; --code-text:#e2e8f0;
+        }
+        @media (prefers-color-scheme: dark){
+            :root:not([data-theme="light"]){
+                --primary:#60a5fa; --primary-dark:#93bbfc; --accent:#fbbf24;
+                --text:#f3f4f6; --text-light:#9ca3af; --bg:#111827; --bg-alt:#1f2937;
+                --bg-card:#1f2937; --border:#374151; --success:#34d399;
+                --code-bg:#0f172a; --code-text:#e2e8f0;
+            }
+        }
+        *{margin:0;padding:0;box-sizing:border-box}
+        body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,sans-serif;
+            color:var(--text);background:var(--bg);line-height:1.7}
+        .container{max-width:900px;margin:0 auto;padding:0 1.5rem}
+        header{background:#091525;color:#fff;padding:1rem 0;border-bottom:3px solid var(--accent)}
+        .header-inner{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.6rem}
+        .brand{font-size:.95rem;font-weight:700}
+        .header-right{display:flex;align-items:center;gap:1rem}
+        .brand-email{font-size:.8rem;opacity:.75}
+        .lang-select{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.5);
+            padding:.35rem .7rem;border-radius:999px;font-size:.85rem;font-weight:700;cursor:pointer;font-family:inherit}
+        .lang-select option{color:#111}
+        .hero{background:#080f1e;color:#fff;padding:3.6rem 0 3rem;text-align:center}
+        .hero h1{font-size:2.1rem;font-weight:800;margin-bottom:1.1rem;line-height:1.22;color:#fff}
+        .hero p{font-size:1.13rem;font-weight:500;color:#fff;max-width:640px;margin:0 auto 1.6rem}
+        .hero-badges{display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap;margin-bottom:1.8rem}
+        .badge{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.22);color:#fff;
+            font-size:.8rem;font-weight:600;padding:.35rem .8rem;border-radius:999px}
+        .btn-download{display:inline-flex;align-items:center;gap:.6rem;background:var(--accent);color:#111827;
+            text-decoration:none;font-weight:800;font-size:1.08rem;padding:1rem 2rem;border-radius:12px;
+            box-shadow:0 10px 24px rgba(245,158,11,.32);transition:transform .1s,filter .15s}
+        .btn-download:hover{filter:brightness(1.05);transform:translateY(-1px)}
+        .btn-download svg{width:20px;height:20px}
+        .dl-desc{font-size:.9rem;color:rgba(255,255,255,.8);max-width:520px;margin:1rem auto 0}
+        .dl-counter{display:inline-flex;align-items:center;gap:.4rem;margin-top:1.1rem;
+            background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);
+            padding:.4rem .9rem;border-radius:999px;font-size:.85rem;color:rgba(255,255,255,.9)}
+        .dl-counter strong{color:#fff}
+        .dl-counter svg{width:15px;height:15px}
+        section.block{padding:3rem 0;border-bottom:1px solid var(--border)}
+        section.alt{background:var(--bg-alt)}
+        h2{font-size:1.55rem;font-weight:800;margin-bottom:1.1rem;color:var(--text)}
+        .lead{font-size:1.02rem;color:var(--text-light)}
+        .cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1rem;margin-top:1.4rem}
+        .card{background:var(--bg-card);border:1px solid var(--border);border-radius:14px;padding:1.2rem}
+        .card h3{font-size:1.02rem;color:var(--primary);margin-bottom:.4rem}
+        .card p{font-size:.92rem;color:var(--text-light)}
+        .step{display:flex;gap:1rem;align-items:flex-start;padding:1rem 0;border-bottom:1px dashed var(--border)}
+        .step:last-child{border-bottom:none}
+        .step .num{flex:0 0 34px;height:34px;background:var(--primary);color:#fff;border-radius:50%;
+            display:flex;align-items:center;justify-content:center;font-weight:800}
+        .step .body{flex:1;min-width:0}
+        .step h3{font-size:1.02rem;margin-bottom:.25rem}
+        .step p{font-size:.94rem;color:var(--text-light)}
+        .shots{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:1rem;margin-top:1.6rem}
+        .shot{background:var(--bg-card);border:1px solid var(--border);border-radius:12px;padding:.7rem}
+        .shot svg{width:100%;height:auto;display:block;border-radius:8px}
+        .shot .cap{font-size:.82rem;color:var(--text-light);margin-top:.5rem;text-align:center}
+        code{background:var(--code-bg);color:var(--code-text);border-radius:5px;padding:.1rem .4rem;font-size:.85em;font-family:Consolas,monospace}
+        .guide-link{display:inline-block;margin-top:1.4rem;font-weight:700;color:var(--primary);text-decoration:none;font-size:1rem}
+        .guide-link:hover{text-decoration:underline}
+        .faq-item{border:1px solid var(--border);border-radius:12px;margin-top:.8rem;background:var(--bg-card);overflow:hidden}
+        .faq-item summary{cursor:pointer;padding:1rem 1.1rem;font-weight:700;font-size:.98rem;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+        .faq-item summary::-webkit-details-marker{display:none}
+        .faq-item summary::after{content:"+";color:var(--primary);font-weight:800}
+        .faq-item[open] summary::after{content:"–"}
+        .faq-item .a{padding:0 1.1rem 1.1rem;font-size:.93rem;color:var(--text-light)}
+        .req{list-style:none;margin-top:1rem}
+        .req li{padding:.5rem 0 .5rem 1.7rem;position:relative;font-size:.95rem;color:var(--text-light)}
+        .req li::before{content:"✓";position:absolute;left:0;color:var(--success);font-weight:800}
+        footer{background:#091525;color:#cbd5e1;padding:2.4rem 0;text-align:center}
+        footer a{color:#93c5fd;text-decoration:none;margin:0 .6rem;font-weight:600}
+        footer a:hover{text-decoration:underline}
+        .disclaimer{font-size:.8rem;opacity:.72;max-width:640px;margin:1rem auto 0;line-height:1.6}
+        @media (max-width:640px){
+            .hero h1{font-size:1.55rem}.hero p{font-size:1rem}
+            h2{font-size:1.3rem}.header-inner{justify-content:center;text-align:center}
+        }
+    </style>
 </head>
 <body>
-<div class="wrap">
 
-  <div class="top">
-    <div class="badge">
-      <svg width="34" height="34" viewBox="0 0 34 34"><path d="M8 18 l6 6 l12 -14" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <div>
-      <h1>VB-G RAM G · Certificate Auto-Fill</h1>
-      <div class="sub">Chrome / Edge add-on for the Work Entry page</div>
-    </div>
-  </div>
+    <header>
+        <div class="container header-inner">
+            <div class="brand">Vision Technologies and Robotics</div>
+            <div class="header-right">
+                <div class="brand-email">subho@visiontech.com.in</div>
+                <select id="langSelect" class="lang-select" aria-label="Language">
+                    <option value="en">English</option>
+                    <option value="bn">বাংলা</option>
+                    <option value="hi">हिन्दी</option>
+                </select>
+            </div>
+        </div>
+    </header>
 
-  <div class="hero">
-    <p class="lead">Fills all <b>8 certificate blocks</b> on the VB-G RAM G Work Entry
-      page in one click — the same signing-authority details in every block — and
-      attaches the certificate PDFs from a folder. Oversized scans are compressed to
-      fit the server’s size limit automatically.</p>
+    <section class="hero">
+        <div class="container">
+            <h1 data-i18n="hero.h1">One-Click Certificate Upload for VB-G RAM G Work Entry</h1>
+            <p data-i18n="hero.p">Fill all 8 certificate blocks and attach every PDF on the VB-G RAM G Work Entry page in one click. Oversized scans are compressed automatically. No technical knowledge needed.</p>
 
-    <a class="dl" id="dl" href="https://github.com/visiontech-com-ai/vbgramg-cert-uploader/releases/latest">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"/><path d="M7 11l5 5 5-5"/><path d="M5 21h14"/></svg>
-      Download for Chrome / Edge
-    </a>
+            <div class="hero-badges">
+                <span class="badge" data-i18n="badge.browser">Chrome &amp; Edge</span>
+                <span class="badge" data-i18n="badge.pdf">8 PDFs in one click</span>
+                <span class="badge" data-i18n="badge.compress">Auto-compress scans</span>
+                <span class="badge" data-i18n="badge.free">100% Free</span>
+            </div>
 
-    <div class="meta">
-      <span id="ver">latest release</span>
-      <span class="dot"></span>
-      <span class="count" id="count">downloads: —</span>
-    </div>
-  </div>
+            <a href="https://github.com/visiontech-com-ai/vbgramg-cert-uploader/releases/latest" id="dl" class="btn-download">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+                <span data-i18n="dl.btn">Download for Chrome / Edge</span>
+            </a>
+            <p class="dl-desc" data-i18n="dl.desc">A small add-on you load into your browser once. Free and open — the source is on GitHub.</p>
 
-  <div class="grid">
-    <div class="card"><h3>One-click fill</h3><p>The same Name / Designation / Department / Mobile / Email into all 8 blocks, set once in the add-on’s settings.</p></div>
-    <div class="card"><h3>Folder → PDFs</h3><p>Pick a folder; each PDF is matched to its block by the number 1–8 in its name.</p></div>
-    <div class="card"><h3>Auto-compress</h3><p>Scans over the ~1 MB server limit are re-rendered smaller on your PC — nothing is uploaded anywhere.</p></div>
-  </div>
+            <div class="dl-counter" id="dlCounter" hidden>
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5m0 0l5-5m-5 5V3"/></svg>
+                <strong id="dlCount">—</strong>&nbsp;<span data-i18n="dl.counter">downloads so far</span>
+            </div>
+        </div>
+    </section>
 
-  <h2>Install (about a minute)</h2>
-  <ol class="steps">
-    <li>Download the ZIP above and <b>unzip</b> it to a permanent folder (e.g. <code>C:\VBG\vbg-cert-autofill</code>).</li>
-    <li>Open <code>chrome://extensions</code> (or <code>edge://extensions</code>) and turn on <b>Developer mode</b>.</li>
-    <li>Click <b>Load unpacked</b> and select the <code>vbg-cert-autofill</code> folder.</li>
-    <li>Click the add-on’s toolbar icon and enter your signing details once. Then open the Work Entry page and use the panel.</li>
-  </ol>
-  <p style="font-size:14px;margin-top:14px">
-    Full picture guide: <a class="inline" href="vbg-cert-autofill/install-guide.html">open the illustrated install &amp; use guide →</a>
-  </p>
+    <section class="block">
+        <div class="container">
+            <h2 data-i18n="what.h2">What does this tool do?</h2>
+            <p class="lead" data-i18n="what.p">The VB-G RAM G Work Entry page asks for the same signing-authority details in 8 certificate blocks and a separate PDF upload for each. This add-on fills all 8 blocks with your details in one click and attaches the 8 PDFs from a folder — turning several minutes of repetitive typing and uploading into a single click.</p>
+            <div class="cards">
+                <div class="card"><h3 data-i18n="card1.h3">Fills all 8 blocks</h3><p data-i18n="card1.p">Your Name, Designation, Department, Mobile and Email go into every certificate block — entered once in the add-on's settings and remembered.</p></div>
+                <div class="card"><h3 data-i18n="card2.h3">Attaches the PDFs</h3><p data-i18n="card2.p">Pick a folder; each PDF is matched to its block by the number 1–8 in its file name. DPR and Convergence are set to Yes automatically.</p></div>
+                <div class="card"><h3 data-i18n="card3.h3">Compresses big scans</h3><p data-i18n="card3.p">Scans over the ~1 MB server limit are re-rendered smaller on your own PC so they upload — nothing is sent to any online service.</p></div>
+                <div class="card"><h3 data-i18n="card4.h3">Private &amp; offline</h3><p data-i18n="card4.p">Everything runs inside your browser. Your details stay on your PC and are never sent anywhere.</p></div>
+            </div>
+        </div>
+    </section>
 
-  <div class="foot">
-    Runs entirely in your browser · no data leaves your PC ·
-    <a href="https://github.com/visiontech-com-ai/vbgramg-cert-uploader">source on GitHub</a>
-  </div>
-</div>
+    <section class="block alt">
+        <div class="container">
+            <h2 data-i18n="howinst.h2">How to install (about a minute)</h2>
+            <div class="step"><div class="num">1</div><div class="body"><h3 data-i18n="inst1.h3">Download &amp; unzip</h3><p data-i18n="inst1.p">Download the ZIP above and unzip it to a permanent folder, e.g. <code>C:\VBG\vbg-cert-autofill</code>.</p></div></div>
+            <div class="step"><div class="num">2</div><div class="body"><h3 data-i18n="inst2.h3">Open Extensions</h3><p data-i18n="inst2.p">In Chrome type <code>chrome://extensions</code> (Edge: <code>edge://extensions</code>) and turn on <b>Developer mode</b>.</p></div></div>
+            <div class="step"><div class="num">3</div><div class="body"><h3 data-i18n="inst3.h3">Load unpacked</h3><p data-i18n="inst3.p">Click <b>Load unpacked</b> and select the <code>vbg-cert-autofill</code> folder. A blue ✓ icon appears in the toolbar.</p></div></div>
+            <div class="step"><div class="num">4</div><div class="body"><h3 data-i18n="inst4.h3">Set your details once</h3><p data-i18n="inst4.p">Click the add-on's toolbar icon and enter Name, Designation, Department, Mobile, Email. They are saved for every work entry.</p></div></div>
 
-<script>
-  (function(){
-    var OWNER = "visiontech-com-ai", REPO = "vbgramg-cert-uploader";
-    var dl = document.getElementById("dl");
-    var countEl = document.getElementById("count");
-    var verEl = document.getElementById("ver");
-    fetch("https://api.github.com/repos/" + OWNER + "/" + REPO + "/releases/latest", {
-      headers: { "Accept": "application/vnd.github+json" }
-    })
-    .then(function(r){ return r.ok ? r.json() : Promise.reject(r.status); })
-    .then(function(rel){
-      if (rel.tag_name) verEl.textContent = rel.tag_name;
-      var asset = (rel.assets || []).filter(function(a){ return /\.zip$/i.test(a.name); })[0];
-      if (asset) {
-        dl.href = asset.browser_download_url;
-        var n = asset.download_count || 0;
-        countEl.textContent = "downloads: " + n.toLocaleString();
-      } else {
-        countEl.textContent = "";
+            <div class="shots">
+                <div class="shot">
+                    <svg viewBox="0 0 320 90"><rect width="320" height="90" rx="8" fill="#fff" stroke="#dce1ea"/><circle cx="16" cy="20" r="4" fill="#ff5f57"/><circle cx="30" cy="20" r="4" fill="#febc2e"/><circle cx="44" cy="20" r="4" fill="#28c840"/><rect x="14" y="40" width="292" height="30" rx="15" fill="#eef1f7" stroke="#224aaa" stroke-width="2"/><text x="28" y="60" font-family="Consolas,monospace" font-size="14" fill="#224aaa">chrome://extensions</text></svg>
+                    <div class="cap" data-i18n="shot.addr">Open the Extensions page</div>
+                </div>
+                <div class="shot">
+                    <svg viewBox="0 0 320 90"><rect width="320" height="90" rx="8" fill="#fff" stroke="#dce1ea"/><text x="16" y="30" font-family="Segoe UI,sans-serif" font-size="13" fill="#1a1f2e" font-weight="700">Extensions</text><text x="150" y="30" font-family="Segoe UI,sans-serif" font-size="12" fill="#5b6472">Developer mode</text><rect x="262" y="20" width="44" height="20" rx="10" fill="#224aaa"/><circle cx="296" cy="30" r="8" fill="#fff"/><rect x="248" y="48" width="66" height="20" rx="5" fill="#fef7e0" stroke="#f5e2a3"/><text x="256" y="62" font-size="10" fill="#6b5300" font-family="Segoe UI,sans-serif">turn ON</text></svg>
+                    <div class="cap" data-i18n="shot.dev">Turn on Developer mode</div>
+                </div>
+                <div class="shot">
+                    <svg viewBox="0 0 320 130"><rect width="320" height="130" rx="8" fill="#fff" stroke="#dce1ea"/><rect x="16" y="16" width="110" height="30" rx="6" fill="#224aaa"/><text x="30" y="35" font-size="12" fill="#fff" font-family="Segoe UI,sans-serif">Load unpacked</text><rect x="40" y="52" width="240" height="66" rx="8" fill="#f8f9fc" stroke="#c7cfdd"/><path d="M52 80 h20 l5 5 h34 a4 4 0 0 1 4 4 v14 a4 4 0 0 1 -4 4 h-59 a4 4 0 0 1 -4 -4 v-19 a4 4 0 0 1 4 -4 z" fill="#ffd479" stroke="#e0a93b"/><text x="118" y="98" font-size="10" fill="#1a1f2e" font-family="Segoe UI,sans-serif">vbg-cert-autofill</text><rect x="200" y="90" width="72" height="20" rx="5" fill="#224aaa"/><text x="209" y="104" font-size="10" fill="#fff" font-family="Segoe UI,sans-serif">Select Folder</text></svg>
+                    <div class="cap" data-i18n="shot.load">Load unpacked → pick the folder</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="block">
+        <div class="container">
+            <h2 data-i18n="howuse.h2">How to use (every work entry)</h2>
+            <div class="step"><div class="num">1</div><div class="body"><h3 data-i18n="use1.h3">Open Work Entry</h3><p data-i18n="use1.p">Open the Work Entry page and choose the work category, heads and village as usual. The panel appears at the top-right and shows who you're signing as.</p></div></div>
+            <div class="step"><div class="num">2</div><div class="body"><h3 data-i18n="use2.h3">Choose the folder</h3><p data-i18n="use2.p">Click <b>Choose certificate folder</b>. The panel reveals which PDF matched each block (1–8). Oversized scans are compressed to fit.</p></div></div>
+            <div class="step"><div class="num">3</div><div class="body"><h3 data-i18n="use3.h3">Fill the form</h3><p data-i18n="use3.p">Click <b>Fill form</b>. All 8 blocks are filled and the 8 PDFs attached. A “Done” message appears and the list closes.</p></div></div>
+            <div class="step"><div class="num">4</div><div class="body"><h3 data-i18n="use4.h3">Review and Save</h3><p data-i18n="use4.p">Check the form, then click the page's own <b>Save</b> button. Nothing is submitted until you do.</p></div></div>
+
+            <div class="shots">
+                <div class="shot">
+                    <svg viewBox="0 0 250 200"><rect x="2" y="2" width="246" height="196" rx="10" fill="#fff" stroke="#c7cfdd"/><rect x="2" y="2" width="246" height="34" rx="10" fill="#224aaa"/><text x="14" y="18" font-size="11" fill="#fff" font-family="Segoe UI,sans-serif" font-weight="700">Signing authority</text><text x="14" y="30" font-size="8.5" fill="#cdd8f2" font-family="Segoe UI,sans-serif">Used for all 8 certificate blocks</text><rect x="14" y="46" width="222" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="20" y="61" font-size="10" fill="#5b6472" font-family="Segoe UI,sans-serif">Name</text><rect x="14" y="74" width="106" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="20" y="89" font-size="10" fill="#5b6472" font-family="Segoe UI,sans-serif">Designation</text><rect x="130" y="74" width="106" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="136" y="89" font-size="10" fill="#5b6472" font-family="Segoe UI,sans-serif">Department</text><rect x="14" y="102" width="106" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="20" y="117" font-size="10" fill="#5b6472" font-family="Segoe UI,sans-serif">Mobile</text><rect x="130" y="102" width="106" height="22" rx="5" fill="#f4f6fb" stroke="#c7cfdd"/><text x="136" y="117" font-size="10" fill="#5b6472" font-family="Segoe UI,sans-serif">Email</text><text x="14" y="140" font-size="10" fill="#137333" font-family="Segoe UI,sans-serif" font-weight="700">Saved ✓</text></svg>
+                    <div class="cap" data-i18n="shot.settings">Enter your details once (toolbar icon)</div>
+                </div>
+                <div class="shot">
+                    <svg viewBox="0 0 300 250"><rect x="4" y="4" width="292" height="242" rx="10" fill="#fff" stroke="#224aaa"/><rect x="4" y="4" width="292" height="30" rx="10" fill="#224aaa"/><text x="16" y="24" font-size="12" fill="#fff" font-family="Segoe UI,sans-serif" font-weight="700">VB-G RAM G · Certificate Auto-Fill</text><rect x="16" y="44" width="268" height="20" rx="6" fill="#eef3fb"/><text x="24" y="57" font-size="9.5" fill="#224aaa" font-family="Segoe UI,sans-serif">Signing as <tspan font-weight="700">A. Kumar, BDO</tspan></text><rect x="16" y="72" width="268" height="24" rx="7" fill="#eef2fb" stroke="#224aaa"/><text x="52" y="88" font-size="10.5" fill="#224aaa" font-family="Segoe UI,sans-serif" font-weight="700">① Choose certificate folder…</text><g font-family="Segoe UI,sans-serif" font-size="9"><rect x="16" y="106" width="16" height="12" rx="3" fill="#224aaa"/><text x="20" y="115" fill="#fff">1</text><text x="38" y="115" fill="#1a1f2e">Pre-estimation</text><text x="232" y="115" fill="#137333">01.pdf ✓</text><rect x="16" y="122" width="16" height="12" rx="3" fill="#224aaa"/><text x="20" y="131" fill="#fff">2</text><text x="38" y="131" fill="#1a1f2e">No duplication</text><text x="232" y="131" fill="#137333">02.pdf ✓</text><rect x="16" y="138" width="16" height="12" rx="3" fill="#c5221f"/><text x="20" y="147" fill="#fff">3</text><text x="38" y="147" fill="#1a1f2e">Non-splitting</text><text x="212" y="147" fill="#137333">1.8→0.6MB ✓</text><text x="38" y="163" fill="#8a8a8a">… blocks 4–8 matched …</text></g><rect x="16" y="178" width="268" height="28" rx="7" fill="#0A66C2"/><text x="118" y="197" font-size="12" fill="#fff" font-family="Segoe UI,sans-serif" font-weight="700">② Fill form</text><rect x="16" y="214" width="268" height="16" rx="4" fill="#e6f4ea"/><text x="22" y="225" font-size="9" fill="#137333" font-family="Segoe UI,sans-serif">8/8 matched · 1 compressed. Review, then Fill.</text></svg>
+                    <div class="cap" data-i18n="shot.panel">Choose the folder → mapping → Fill</div>
+                </div>
+            </div>
+
+            <a class="guide-link" href="vbg-cert-autofill/install-guide.html" data-i18n="guide.link">Open the full illustrated install &amp; use guide →</a>
+        </div>
+    </section>
+
+    <section class="block alt">
+        <div class="container">
+            <h2 data-i18n="sysreq.h2">Requirements</h2>
+            <ul class="req">
+                <li data-i18n="sysreq.browser"><strong>Browser:</strong> Google Chrome or Microsoft Edge (Windows, Mac or Linux).</li>
+                <li data-i18n="sysreq.portal"><strong>Access:</strong> your usual VB-G RAM G login.</li>
+                <li data-i18n="sysreq.other"><strong>Nothing else to install.</strong> Works alongside all your other browsers and extensions.</li>
+            </ul>
+        </div>
+    </section>
+
+    <section class="block">
+        <div class="container">
+            <h2 data-i18n="faq.h2">Frequently asked questions</h2>
+            <details class="faq-item"><summary data-i18n="faq1.q">Is this an official government tool?</summary><div class="a" data-i18n="faq1.a">No. It is an independent helper made by Vision Technologies and Robotics to speed up repetitive data entry on the Work Entry page. It is not affiliated with or endorsed by any government body. You stay in control and click Save yourself.</div></details>
+            <details class="faq-item"><summary data-i18n="faq2.q">Is it safe? Where does my data go?</summary><div class="a" data-i18n="faq2.a">Everything runs inside your own browser. Your signing details are stored only on your PC, and PDF compression happens locally on your machine — nothing is uploaded to any online service. The full source code is open on GitHub.</div></details>
+            <details class="faq-item"><summary data-i18n="faq3.q">How should I name the PDF files?</summary><div class="a" data-i18n="faq3.a">Put all certificate PDFs in one folder and make sure each file name contains its block number 1 to 8 (for example 1.pdf, 02.pdf or cert-3.pdf). The tool matches them automatically and shows you the result before filling.</div></details>
+            <details class="faq-item"><summary data-i18n="faq4.q">My scan is larger than 1 MB — what happens?</summary><div class="a" data-i18n="faq4.a">The tool compresses oversized scans automatically so they fit the server's limit, and shows the new size (for example 1.80 MB → 0.62 MB). If a file still cannot fit, it is flagged and you can replace it with a clearer scan.</div></details>
+            <details class="faq-item"><summary data-i18n="faq5.q">Do I have to type my details every time?</summary><div class="a" data-i18n="faq5.a">No. You enter Name, Designation, Department, Mobile and Email once in the add-on's settings. They are remembered across restarts and updates, so every work entry is just choose-folder and Fill.</div></details>
+            <details class="faq-item"><summary data-i18n="faq6.q">Does it submit the form for me?</summary><div class="a" data-i18n="faq6.a">No. The tool only fills the fields and attaches the PDFs. You review everything and click the Work Entry page's own Save button yourself.</div></details>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div>
+                <a href="https://github.com/visiontech-com-ai/vbgramg-cert-uploader" data-i18n="footer.repo">GitHub repository</a>
+                <a href="https://github.com/visiontech-com-ai/vbgramg-cert-uploader/issues" data-i18n="footer.issue">Report a problem</a>
+                <a href="https://github.com/visiontech-com-ai/vbgramg-cert-uploader/releases/latest" data-i18n="footer.download">Download</a>
+                <a href="vbg-cert-autofill/install-guide.html" data-i18n="footer.guide">Install guide</a>
+            </div>
+            <p class="disclaimer" data-i18n="footer.disclaimer">VB-G RAM G, VBGRAMG and related government portal names are the property of the Government of India / State Government. This tool is an independent utility and is not affiliated with or endorsed by any government body.</p>
+            <p class="disclaimer">© Vision Technologies and Robotics · subho@visiontech.com.in</p>
+        </div>
+    </footer>
+
+    <script>
+    /* ---------- translations (English is the source in the HTML) ---------- */
+    var I18N = {
+      bn: {
+        "hero.h1":"VB-G RAM G ওয়ার্ক এন্ট্রির জন্য এক-ক্লিক সার্টিফিকেট আপলোড",
+        "hero.p":"VB-G RAM G ওয়ার্ক এন্ট্রি পেজে ৮টি সার্টিফিকেট ব্লক পূরণ করুন এবং প্রতিটি PDF এক ক্লিকেই সংযুক্ত করুন। বড় স্ক্যান স্বয়ংক্রিয়ভাবে কমপ্রেস হয়। কোনো কারিগরি জ্ঞানের প্রয়োজন নেই।",
+        "badge.browser":"Chrome ও Edge","badge.pdf":"এক ক্লিকে ৮টি PDF","badge.compress":"স্ক্যান অটো-কমপ্রেস","badge.free":"১০০% বিনামূল্যে",
+        "dl.btn":"Chrome / Edge-এর জন্য ডাউনলোড","dl.desc":"একটি ছোট অ্যাড-অন যা একবার ব্রাউজারে লোড করতে হয়। বিনামূল্যে ও ওপেন — সোর্স GitHub-এ।","dl.counter":"বার ডাউনলোড হয়েছে",
+        "what.h2":"এই টুলটি কী করে?","what.p":"VB-G RAM G ওয়ার্ক এন্ট্রি পেজ ৮টি সার্টিফিকেট ব্লকে একই স্বাক্ষরকারীর তথ্য এবং প্রতিটির জন্য আলাদা PDF আপলোড চায়। এই অ্যাড-অন এক ক্লিকে আপনার তথ্য দিয়ে ৮টি ব্লক পূরণ করে এবং একটি ফোল্ডার থেকে ৮টি PDF সংযুক্ত করে — কয়েক মিনিটের পুনরাবৃত্তিমূলক টাইপিং ও আপলোড এক ক্লিকে পরিণত হয়।",
+        "card1.h3":"৮টি ব্লক পূরণ করে","card1.p":"আপনার নাম, পদবি, দপ্তর, মোবাইল ও ইমেল প্রতিটি সার্টিফিকেট ব্লকে বসে — অ্যাড-অনের সেটিংসে একবার দিলে মনে রাখে।",
+        "card2.h3":"PDF সংযুক্ত করে","card2.p":"একটি ফোল্ডার বাছুন; ফাইলের নামে থাকা ১–৮ নম্বর অনুসারে প্রতিটি PDF তার ব্লকে মিলে যায়। DPR ও Convergence স্বয়ংক্রিয়ভাবে Yes সেট হয়।",
+        "card3.h3":"বড় স্ক্যান কমপ্রেস করে","card3.p":"~১ MB সার্ভার সীমার বেশি স্ক্যান আপনার নিজের কম্পিউটারেই ছোট করে তৈরি হয় যাতে আপলোড হয় — কোনো অনলাইন সার্ভিসে কিছু পাঠানো হয় না।",
+        "card4.h3":"গোপনীয় ও অফলাইন","card4.p":"সবকিছু আপনার ব্রাউজারের ভিতরে চলে। আপনার তথ্য আপনার কম্পিউটারেই থাকে, কোথাও পাঠানো হয় না।",
+        "howinst.h2":"কীভাবে ইনস্টল করবেন (প্রায় এক মিনিট)",
+        "inst1.h3":"ডাউনলোড ও আনজিপ","inst1.p":"উপরের ZIP ডাউনলোড করে একটি স্থায়ী ফোল্ডারে আনজিপ করুন, যেমন <code>C:\\VBG\\vbg-cert-autofill</code>।",
+        "inst2.h3":"Extensions খুলুন","inst2.p":"Chrome-এ <code>chrome://extensions</code> টাইপ করুন (Edge: <code>edge://extensions</code>) এবং <b>Developer mode</b> চালু করুন।",
+        "inst3.h3":"Load unpacked","inst3.p":"<b>Load unpacked</b> ক্লিক করে <code>vbg-cert-autofill</code> ফোল্ডারটি বাছুন। টুলবারে একটি নীল ✓ আইকন দেখা যাবে।",
+        "inst4.h3":"একবার তথ্য দিন","inst4.p":"অ্যাড-অনের টুলবার আইকনে ক্লিক করে নাম, পদবি, দপ্তর, মোবাইল, ইমেল দিন। প্রতিটি ওয়ার্ক এন্ট্রির জন্য এগুলি সংরক্ষিত থাকে।",
+        "shot.addr":"Extensions পেজ খুলুন","shot.dev":"Developer mode চালু করুন","shot.load":"Load unpacked → ফোল্ডার বাছুন",
+        "howuse.h2":"কীভাবে ব্যবহার করবেন (প্রতিটি ওয়ার্ক এন্ট্রিতে)",
+        "use1.h3":"ওয়ার্ক এন্ট্রি খুলুন","use1.p":"ওয়ার্ক এন্ট্রি পেজ খুলে যথারীতি ওয়ার্ক ক্যাটেগরি, হেডস ও গ্রাম বাছুন। ডান-উপরে প্যানেলটি দেখা যাবে এবং আপনি কার নামে স্বাক্ষর করছেন তা দেখাবে।",
+        "use2.h3":"ফোল্ডার বাছুন","use2.p":"<b>Choose certificate folder</b> ক্লিক করুন। কোন PDF কোন ব্লকে (১–৮) মিলল প্যানেল তা দেখাবে। বড় স্ক্যান আকারে মানানসই করতে কমপ্রেস হয়।",
+        "use3.h3":"ফর্ম পূরণ করুন","use3.p":"<b>Fill form</b> ক্লিক করুন। ৮টি ব্লক পূরণ ও ৮টি PDF সংযুক্ত হয়। একটি “Done” বার্তা আসে এবং তালিকা বন্ধ হয়।",
+        "use4.h3":"যাচাই করে Save করুন","use4.p":"ফর্মটি দেখে নিন, তারপর পেজের নিজস্ব <b>Save</b> বোতামে ক্লিক করুন। আপনি না করা পর্যন্ত কিছু জমা হয় না।",
+        "shot.settings":"একবার তথ্য দিন (টুলবার আইকন)","shot.panel":"ফোল্ডার বাছুন → ম্যাপিং → Fill",
+        "guide.link":"সম্পূর্ণ চিত্রসহ ইনস্টল ও ব্যবহার গাইড খুলুন →",
+        "sysreq.h2":"প্রয়োজনীয়তা",
+        "sysreq.browser":"<strong>ব্রাউজার:</strong> Google Chrome বা Microsoft Edge (Windows, Mac বা Linux)।",
+        "sysreq.portal":"<strong>অ্যাক্সেস:</strong> আপনার স্বাভাবিক VB-G RAM G লগইন।",
+        "sysreq.other":"<strong>আর কিছু ইনস্টলের প্রয়োজন নেই।</strong> আপনার অন্য সব ব্রাউজার ও এক্সটেনশনের পাশাপাশি কাজ করে।",
+        "faq.h2":"সচরাচর জিজ্ঞাসিত প্রশ্ন",
+        "faq1.q":"এটি কি কোনো সরকারি টুল?","faq1.a":"না। এটি Vision Technologies and Robotics-এর তৈরি একটি স্বাধীন সহায়ক টুল, যা ওয়ার্ক এন্ট্রি পেজে পুনরাবৃত্তিমূলক তথ্য এন্ট্রি দ্রুত করে। এটি কোনো সরকারি সংস্থার সাথে সম্পর্কিত বা অনুমোদিত নয়। নিয়ন্ত্রণ আপনার হাতেই থাকে এবং Save আপনি নিজে ক্লিক করেন।",
+        "faq2.q":"এটি কি নিরাপদ? আমার তথ্য কোথায় যায়?","faq2.a":"সবকিছু আপনার নিজের ব্রাউজারে চলে। আপনার স্বাক্ষরকারীর তথ্য শুধু আপনার কম্পিউটারে সংরক্ষিত হয়, এবং PDF কমপ্রেশন আপনার মেশিনেই হয় — কোনো অনলাইন সার্ভিসে কিছু আপলোড হয় না। সম্পূর্ণ সোর্স কোড GitHub-এ উন্মুক্ত।",
+        "faq3.q":"PDF ফাইলগুলির নাম কীভাবে দেব?","faq3.a":"সব সার্টিফিকেট PDF একটি ফোল্ডারে রাখুন এবং প্রতিটি ফাইলের নামে ব্লক নম্বর ১ থেকে ৮ রাখুন (যেমন 1.pdf, 02.pdf বা cert-3.pdf)। টুলটি স্বয়ংক্রিয়ভাবে মিলিয়ে নেয় এবং পূরণের আগে ফল দেখায়।",
+        "faq4.q":"আমার স্ক্যান ১ MB-র বেশি — কী হবে?","faq4.a":"টুলটি বড় স্ক্যান স্বয়ংক্রিয়ভাবে কমপ্রেস করে সার্ভারের সীমায় আনে এবং নতুন আকার দেখায় (যেমন 1.80 MB → 0.62 MB)। কোনো ফাইল তবুও না মিললে সেটি চিহ্নিত হয় এবং আপনি স্পষ্টতর স্ক্যান দিয়ে বদলাতে পারেন।",
+        "faq5.q":"প্রতিবার কি তথ্য টাইপ করতে হবে?","faq5.a":"না। নাম, পদবি, দপ্তর, মোবাইল ও ইমেল অ্যাড-অনের সেটিংসে একবার দেন। রিস্টার্ট ও আপডেটের পরেও এগুলি মনে থাকে, তাই প্রতিটি ওয়ার্ক এন্ট্রি শুধু ফোল্ডার-বাছাই ও Fill।",
+        "faq6.q":"এটি কি আমার হয়ে ফর্ম জমা দেয়?","faq6.a":"না। টুলটি শুধু ফিল্ড পূরণ করে ও PDF সংযুক্ত করে। আপনি সব যাচাই করে ওয়ার্ক এন্ট্রি পেজের নিজস্ব Save বোতাম নিজে ক্লিক করেন।",
+        "footer.repo":"GitHub রিপোজিটরি","footer.issue":"সমস্যা রিপোর্ট করুন","footer.download":"ডাউনলোড","footer.guide":"ইনস্টল গাইড",
+        "footer.disclaimer":"VB-G RAM G, VBGRAMG এবং সংশ্লিষ্ট সরকারি পোর্টালের নাম ভারত সরকার / রাজ্য সরকারের সম্পত্তি। এই টুলটি একটি স্বাধীন উপযোগিতা এবং কোনো সরকারি সংস্থার সাথে সম্পর্কিত বা অনুমোদিত নয়।"
+      },
+      hi: {
+        "hero.h1":"VB-G RAM G वर्क एंट्री के लिए वन-क्लिक सर्टिफिकेट अपलोड",
+        "hero.p":"VB-G RAM G वर्क एंट्री पेज पर सभी 8 सर्टिफिकेट ब्लॉक भरें और हर PDF एक ही क्लिक में जोड़ें। बड़े स्कैन अपने-आप कंप्रेस हो जाते हैं। किसी तकनीकी जानकारी की ज़रूरत नहीं।",
+        "badge.browser":"Chrome व Edge","badge.pdf":"एक क्लिक में 8 PDF","badge.compress":"स्कैन ऑटो-कंप्रेस","badge.free":"100% निःशुल्क",
+        "dl.btn":"Chrome / Edge के लिए डाउनलोड","dl.desc":"एक छोटा ऐड-ऑन जिसे ब्राउज़र में एक बार लोड करना होता है। निःशुल्क व ओपन — सोर्स GitHub पर।","dl.counter":"बार डाउनलोड हुआ",
+        "what.h2":"यह टूल क्या करता है?","what.p":"VB-G RAM G वर्क एंट्री पेज 8 सर्टिफिकेट ब्लॉक में एक ही हस्ताक्षरकर्ता की जानकारी और हर एक के लिए अलग PDF अपलोड माँगता है। यह ऐड-ऑन एक क्लिक में आपकी जानकारी से सभी 8 ब्लॉक भरता है और एक फ़ोल्डर से 8 PDF जोड़ता है — कई मिनट की दोहराव वाली टाइपिंग और अपलोडिंग एक क्लिक बन जाती है।",
+        "card1.h3":"सभी 8 ब्लॉक भरता है","card1.p":"आपका नाम, पदनाम, विभाग, मोबाइल और ईमेल हर सर्टिफिकेट ब्लॉक में जाता है — ऐड-ऑन की सेटिंग्स में एक बार डालें और यह याद रखता है।",
+        "card2.h3":"PDF जोड़ता है","card2.p":"एक फ़ोल्डर चुनें; फ़ाइल-नाम में मौजूद 1–8 नंबर से हर PDF अपने ब्लॉक से मिल जाती है। DPR और Convergence अपने-आप Yes सेट हो जाते हैं।",
+        "card3.h3":"बड़े स्कैन कंप्रेस करता है","card3.p":"~1 MB सर्वर सीमा से बड़े स्कैन आपके अपने PC पर ही छोटे बनाए जाते हैं ताकि अपलोड हो सकें — किसी ऑनलाइन सेवा पर कुछ नहीं भेजा जाता।",
+        "card4.h3":"निजी व ऑफ़लाइन","card4.p":"सब कुछ आपके ब्राउज़र के भीतर चलता है। आपकी जानकारी आपके PC पर ही रहती है, कहीं नहीं भेजी जाती।",
+        "howinst.h2":"इंस्टॉल कैसे करें (लगभग एक मिनट)",
+        "inst1.h3":"डाउनलोड व अनज़िप","inst1.p":"ऊपर से ZIP डाउनलोड कर एक स्थायी फ़ोल्डर में अनज़िप करें, जैसे <code>C:\\VBG\\vbg-cert-autofill</code>।",
+        "inst2.h3":"Extensions खोलें","inst2.p":"Chrome में <code>chrome://extensions</code> टाइप करें (Edge: <code>edge://extensions</code>) और <b>Developer mode</b> चालू करें।",
+        "inst3.h3":"Load unpacked","inst3.p":"<b>Load unpacked</b> क्लिक कर <code>vbg-cert-autofill</code> फ़ोल्डर चुनें। टूलबार में एक नीला ✓ आइकन दिखेगा।",
+        "inst4.h3":"एक बार जानकारी डालें","inst4.p":"ऐड-ऑन के टूलबार आइकन पर क्लिक कर नाम, पदनाम, विभाग, मोबाइल, ईमेल डालें। ये हर वर्क एंट्री के लिए सहेजे जाते हैं।",
+        "shot.addr":"Extensions पेज खोलें","shot.dev":"Developer mode चालू करें","shot.load":"Load unpacked → फ़ोल्डर चुनें",
+        "howuse.h2":"उपयोग कैसे करें (हर वर्क एंट्री में)",
+        "use1.h3":"वर्क एंट्री खोलें","use1.p":"वर्क एंट्री पेज खोलें और हमेशा की तरह वर्क कैटेगरी, हेड्स और गाँव चुनें। पैनल ऊपर-दाईं ओर दिखता है और बताता है कि आप किसके नाम से हस्ताक्षर कर रहे हैं।",
+        "use2.h3":"फ़ोल्डर चुनें","use2.p":"<b>Choose certificate folder</b> क्लिक करें। पैनल दिखाता है कि कौन-सी PDF किस ब्लॉक (1–8) से मिली। बड़े स्कैन फिट होने के लिए कंप्रेस हो जाते हैं।",
+        "use3.h3":"फ़ॉर्म भरें","use3.p":"<b>Fill form</b> क्लिक करें। सभी 8 ब्लॉक भर जाते हैं और 8 PDF जुड़ जाती हैं। एक “Done” संदेश आता है और सूची बंद हो जाती है।",
+        "use4.h3":"जाँचें और Save करें","use4.p":"फ़ॉर्म जाँचें, फिर पेज के अपने <b>Save</b> बटन पर क्लिक करें। जब तक आप ऐसा न करें, कुछ भी जमा नहीं होता।",
+        "shot.settings":"एक बार जानकारी डालें (टूलबार आइकन)","shot.panel":"फ़ोल्डर चुनें → मैपिंग → Fill",
+        "guide.link":"पूरी सचित्र इंस्टॉल व उपयोग गाइड खोलें →",
+        "sysreq.h2":"आवश्यकताएँ",
+        "sysreq.browser":"<strong>ब्राउज़र:</strong> Google Chrome या Microsoft Edge (Windows, Mac या Linux)।",
+        "sysreq.portal":"<strong>एक्सेस:</strong> आपका सामान्य VB-G RAM G लॉगिन।",
+        "sysreq.other":"<strong>और कुछ इंस्टॉल करने की ज़रूरत नहीं।</strong> आपके अन्य सभी ब्राउज़र व एक्सटेंशन के साथ चलता है।",
+        "faq.h2":"अक्सर पूछे जाने वाले प्रश्न",
+        "faq1.q":"क्या यह कोई सरकारी टूल है?","faq1.a":"नहीं। यह Vision Technologies and Robotics द्वारा बनाया गया एक स्वतंत्र सहायक टूल है, जो वर्क एंट्री पेज पर दोहराव वाली डेटा-एंट्री तेज़ करता है। यह किसी सरकारी निकाय से संबद्ध या अनुमोदित नहीं है। नियंत्रण आपके हाथ में रहता है और Save आप स्वयं क्लिक करते हैं।",
+        "faq2.q":"क्या यह सुरक्षित है? मेरा डेटा कहाँ जाता है?","faq2.a":"सब कुछ आपके अपने ब्राउज़र में चलता है। आपकी हस्ताक्षर-जानकारी केवल आपके PC पर संग्रहीत होती है, और PDF कंप्रेशन आपकी मशीन पर ही होता है — किसी ऑनलाइन सेवा पर कुछ अपलोड नहीं होता। पूरा सोर्स कोड GitHub पर खुला है।",
+        "faq3.q":"PDF फ़ाइलों के नाम कैसे रखूँ?","faq3.a":"सभी सर्टिफिकेट PDF एक फ़ोल्डर में रखें और हर फ़ाइल-नाम में उसका ब्लॉक नंबर 1 से 8 रखें (जैसे 1.pdf, 02.pdf या cert-3.pdf)। टूल इन्हें अपने-आप मिलाता है और भरने से पहले परिणाम दिखाता है।",
+        "faq4.q":"मेरा स्कैन 1 MB से बड़ा है — क्या होगा?","faq4.a":"टूल बड़े स्कैन अपने-आप कंप्रेस कर सर्वर की सीमा में लाता है और नया आकार दिखाता है (जैसे 1.80 MB → 0.62 MB)। यदि कोई फ़ाइल फिर भी न समाए, तो वह चिह्नित होती है और आप उसे स्पष्ट स्कैन से बदल सकते हैं।",
+        "faq5.q":"क्या हर बार जानकारी टाइप करनी होगी?","faq5.a":"नहीं। नाम, पदनाम, विभाग, मोबाइल और ईमेल ऐड-ऑन की सेटिंग्स में एक बार डालते हैं। ये रीस्टार्ट और अपडेट के बाद भी याद रहते हैं, इसलिए हर वर्क एंट्री बस फ़ोल्डर-चुनें और Fill है।",
+        "faq6.q":"क्या यह मेरी ओर से फ़ॉर्म जमा करता है?","faq6.a":"नहीं। टूल केवल फ़ील्ड भरता है और PDF जोड़ता है। आप सब कुछ जाँचकर वर्क एंट्री पेज का अपना Save बटन स्वयं क्लिक करते हैं।",
+        "footer.repo":"GitHub रिपॉज़िटरी","footer.issue":"समस्या रिपोर्ट करें","footer.download":"डाउनलोड","footer.guide":"इंस्टॉल गाइड",
+        "footer.disclaimer":"VB-G RAM G, VBGRAMG और संबंधित सरकारी पोर्टल नाम भारत सरकार / राज्य सरकार की संपत्ति हैं। यह टूल एक स्वतंत्र उपयोगिता है और किसी सरकारी निकाय से संबद्ध या अनुमोदित नहीं है।"
       }
-    })
-    .catch(function(){ countEl.textContent = ""; });
-  })();
-</script>
+    };
+
+    (function(){
+      var els = document.querySelectorAll('[data-i18n]');
+      for (var i=0;i<els.length;i++){ els[i].setAttribute('data-en', els[i].innerHTML); }
+      function setLang(lang){
+        var dict = I18N[lang] || null;
+        for (var i=0;i<els.length;i++){
+          var key = els[i].getAttribute('data-i18n');
+          els[i].innerHTML = (dict && dict[key] !== undefined) ? dict[key] : els[i].getAttribute('data-en');
+        }
+        document.documentElement.lang = lang;
+        var sel = document.getElementById('langSelect'); if (sel) sel.value = lang;
+        try { localStorage.setItem('vbgramg_lang', lang); } catch(e){}
+      }
+      var saved = 'bn';
+      try { saved = localStorage.getItem('vbgramg_lang') || 'bn'; } catch(e){}
+      if (!I18N[saved] && saved !== 'en') saved = 'bn';
+      setLang(saved);
+      var sel = document.getElementById('langSelect');
+      if (sel) sel.addEventListener('change', function(){ setLang(this.value); });
+    })();
+
+    /* ---------- download button → release asset, live counter, GA event ---------- */
+    (function(){
+      var OWNER="visiontech-com-ai", REPO="vbgramg-cert-uploader";
+      var dl=document.getElementById('dl');
+      if (dl) dl.addEventListener('click', function(){
+        if (typeof gtag==='function') gtag('event','file_download',{file_name:'vbgramg-cert-uploader.zip',file_extension:'zip',item_id:'cert_uploader'});
+      });
+      fetch('https://api.github.com/repos/'+OWNER+'/'+REPO+'/releases',{headers:{'Accept':'application/vnd.github+json'}})
+        .then(function(r){return r.ok?r.json():null;})
+        .then(function(rels){
+          if(!rels||!rels.length) return;
+          var total=0, latestAsset=null, latestTag=null;
+          rels.forEach(function(rel,idx){
+            (rel.assets||[]).forEach(function(a){
+              if(/\.zip$/i.test(a.name)){
+                total += (a.download_count||0);
+                if(idx===0 && !latestAsset){ latestAsset=a.browser_download_url; latestTag=rel.tag_name; }
+              }
+            });
+          });
+          if(latestAsset && dl){ dl.href=latestAsset; }
+          var el=document.getElementById('dlCount'), box=document.getElementById('dlCounter');
+          if(el){ el.textContent = total.toLocaleString(); }
+          if(box){ box.hidden=false; }
+        })
+        .catch(function(){});
+    })();
+    </script>
+
 </body>
 </html>

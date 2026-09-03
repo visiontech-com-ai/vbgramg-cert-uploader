@@ -94,7 +94,7 @@ details.adv .body{padding:.2rem .6rem .7rem}
 .cert .sec{font-weight:800;margin:13px 0 5px;color:#111}
 .cert table{width:100%;border-collapse:collapse;margin:5px 0 2px}
 .cert .cert-para{margin:8px 0}
-.cert td,.cert th{border:1px solid #b9c2d0;padding:3px 6px;vertical-align:top;text-align:left}
+.cert td,.cert th{border:1px solid #b9c2d0;padding:3px 6px;vertical-align:middle;text-align:left}
 .cert th{background:#eef2fb;font-size:11px}
 .cert .lbl{width:42%;color:#333}
 .cert .cert-para{margin:6px 0;text-align:justify}
@@ -221,6 +221,18 @@ footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
           <button type="button" id="chkReset" class="linklike" data-i18n="form.chkreset">Reset to defaults</button>
         </div>
         <div id="checkEditor"></div>
+      </div>
+    </details>
+
+    <details class="adv" id="sigBox"><summary data-i18n="form.sig">Signatories — optional &amp; editable</summary>
+      <div class="body">
+        <div class="muted" style="margin-bottom:.4rem" data-i18n="form.sig.hint">Turn each panel on/off and edit the text. Leave blank to use the auto text from GP / Block.</div>
+        <div class="fld"><label class="toggle"><input type="checkbox" id="f_sig1_on" checked> <span data-i18n="form.sig1">Panel 1 (Nirman Sahayak)</span></label>
+          <input id="f_sig1" autocomplete="off"></div>
+        <div class="fld"><label class="toggle"><input type="checkbox" id="f_sig2_on" checked> <span data-i18n="form.sig2">Panel 2 (JE / TA)</span></label>
+          <input id="f_sig2" autocomplete="off"></div>
+        <div class="fld"><label class="toggle"><input type="checkbox" id="f_sig3_on" checked> <span data-i18n="form.sig3">Panel 3 (Program Officer / BDO)</span></label>
+          <input id="f_sig3" autocomplete="off"></div>
       </div>
     </details>
 
@@ -414,6 +426,8 @@ function model(){
     convNOC:$("f_conv_noc").value, convMemo:$("f_conv_memo").value.trim(), date:"Date: "+todayStr()
   };
 }
+// first-table Details cell -> UPPERCASE + bold (amount cells pass through unchanged)
+function du(v){ if(v&&typeof v==="object") return v; return {t:(v==null?"":String(v)).toUpperCase(), b:true}; }
 function basic(no,m){
   var costLbl = no===1?"Proposed cost of this scheme-":(no===2?"Proposed Cost of the Work (Rs.)":"Estimated Cost of the Work (Rs.)");
   var ratioLbl = no===2?"Wage-Material Ratio (tentative)":"Wage-Material Ratio";
@@ -433,9 +447,21 @@ function basic(no,m){
   rows.push([costLbl, amtCell(m.cost)]);
   if(no!==1) rows.push([ratioLbl,m.ratio]);
   if(no===5){ rows.push(["Name of Beneficiary",m.ibs?m.benName:""]);rows.push(["Job Card No.",m.ibs?m.benJC:""]);rows.push(["Category of Beneficiary",m.ibs?m.benCat:""]); }
-  return rows;
+  return rows.map(function(r){ return [r[0], du(r[1])]; });
 }
-function sig(m){return [ "Nirman Sahayak "+(m.gp||"____")+" GP", "JE/TA, "+(m.block||"____")+" Development Block", "Program Officer, VB-G RAM G & Block Development Officer, "+(m.block||"____") ];}
+function sigDefaults(m){ return [
+  "Nirman Sahayak "+(m.gp||"____")+" GP",
+  "JE/TA, "+(m.block||"____")+" Development Block",
+  "Program Officer, VB-G RAM G & Block Development Officer, "+(m.block||"____")
+]; }
+function sig(m){
+  var d=sigDefaults(m), out=[];
+  for(var i=1;i<=3;i++){
+    var onEl=$("f_sig"+i+"_on"); if(onEl && !onEl.checked) continue;
+    var el=$("f_sig"+i); out.push((el&&el.value.trim())||d[i-1]);
+  }
+  return out;
+}
 
 function buildCert(no,m){
   var c={no:no, header:HEADER, title:TITLES[no], basic:basic(no,m), sections:[], table:null, tableTitle:"", tableHead:null, certify:CERTIFY[no], date:m.date, sig:sig(m), note:""};
@@ -472,7 +498,7 @@ function buildAll(m){var a=[];for(var i=1;i<=8;i++)a.push(buildCert(i,m));return
 /* ========================= HTML preview ========================= */
 function certHTML(c){
   var h='<div class="cert"><div class="ch">'+esc(c.header)+'</div><div class="ct">'+esc(c.title)+'</div>';
-  h+='<table>'+c.basic.map(function(r){return '<tr><td class="lbl">'+esc(r[0])+'</td><td>'+esc(cellText(r[1]))+'</td></tr>';}).join("")+'</table>';
+  h+='<table>'+c.basic.map(function(r){var d=r[1];var b=(d&&d.b)?' style="font-weight:700"':'';return '<tr><td class="lbl">'+esc(r[0])+'</td><td'+b+'>'+esc(cellText(d))+'</td></tr>';}).join("")+'</table>';
   if(c.note) h+='<p class="cert-para na">'+esc(c.note)+'</p>';
   if(c.tableTitle) h+='<div class="sec">'+esc(c.tableTitle)+'</div>';
   if(c.table){
@@ -483,14 +509,16 @@ function certHTML(c){
   (c.sections||[]).forEach(function(s){ h+='<div class="sec">'+esc(s.title)+'</div><div class="cert-para narr">'+esc(s.body)+'</div>'; });
   h+='<div class="sec">CERTIFICATION:</div><div class="cert-para">'+esc(c.certify)+'</div>';
   h+='<div class="cert-para">'+esc(c.date)+'</div>';
-  h+='<div class="sig">'+c.sig.map(function(s){return '<div><div class="sg">Signature & Seal</div>'+esc(s)+'</div>';}).join("")+'</div>';
+  if(c.sig && c.sig.length) h+='<div class="sig">'+c.sig.map(function(s){return '<div><div class="sg">Signature & Seal</div>'+esc(s)+'</div>';}).join("")+'</div>';
   h+='<div class="foot">'+esc(GEN_TEXT)+'</div></div>';
   return h;
 }
 function render(){
   var box=$("preview");
   if(!selected){ box.innerHTML='<p class="muted">'+(document.querySelector('[data-i18n="prev.empty"]')?tr("prev.empty"):"Choose a work to preview the certificates.")+'</p>'; return; }
-  var m=model(); box.innerHTML=buildAll(m).map(certHTML).join("");
+  var m=model();
+  var d=sigDefaults(m); for(var i=1;i<=3;i++){ var el=$("f_sig"+i); if(el) el.placeholder=d[i-1]; }
+  box.innerHTML=buildAll(m).map(certHTML).join("");
 }
 
 /* ========================= checklist editor ========================= */
@@ -528,14 +556,20 @@ function drawCert(doc,c,m,S){
   function table(head,rows,colW){
     var lh=3.9*S, pad=2.4*S; doc.setFontSize(9*S);
     function drawRow(cells,isHead){
-      var meta=cells.map(function(cell,i){var isInr=cell&&cell.f==="INR";doc.setFont(isInr?"INR":"helvetica",isInr?"normal":(isHead?"bold":"normal"));return {lines:doc.splitTextToSize(String(cellText(cell)==null?"":cellText(cell)),colW[i]-3),inr:isInr};});
+      var meta=cells.map(function(cell,i){
+        var isInr=cell&&cell.f==="INR"; var bold=isHead||(cell&&cell.b);
+        doc.setFont(isInr?"INR":"helvetica", isInr?"normal":(bold?"bold":"normal"));
+        return {lines:doc.splitTextToSize(String(cellText(cell)==null?"":cellText(cell)),colW[i]-3),inr:isInr,bold:bold};
+      });
       var rh=Math.max.apply(null,meta.map(function(o){return o.lines.length;}))*lh+pad;
       space(rh); var x=ML;
       for(var i=0;i<cells.length;i++){
         if(isHead){doc.setFillColor(238,242,251);doc.rect(x,y,colW[i],rh,"F");}
         doc.rect(x,y,colW[i],rh);
-        doc.setFont(meta[i].inr?"INR":"helvetica",meta[i].inr?"normal":(isHead?"bold":"normal"));
-        var ty=y+lh-0.5; meta[i].lines.forEach(function(ln){doc.text(ln,x+1.4,ty);ty+=lh;});
+        doc.setFont(meta[i].inr?"INR":"helvetica", meta[i].inr?"normal":(meta[i].bold?"bold":"normal"));
+        var ch=meta[i].lines.length*lh;
+        var ty=y+(rh-ch)/2+lh-1.1;               // vertically centered block
+        meta[i].lines.forEach(function(ln){doc.text(ln,x+1.4,ty);ty+=lh;});
         x+=colW[i];
       }
       y+=rh;
@@ -559,14 +593,17 @@ function drawCert(doc,c,m,S){
   (c.sections||[]).forEach(function(s){ secTitle(s.title); para(s.body,9); });
   secTitle("CERTIFICATION:"); para(c.certify,9);
   y+=1.2*S; para(c.date,9);
-  // signatories
+  // signatories (only the enabled panels)
+  var N=(c.sig&&c.sig.length)||0;
+  if(N){
   y+=13*S; space(18*S);
-  var sw=CW/3; doc.setFontSize(8.2*S);doc.setFont("helvetica","normal");
-  for(var i=0;i<3;i++){
+  var sw=CW/N; doc.setFontSize(8.2*S);doc.setFont("helvetica","normal");
+  for(var i=0;i<N;i++){
     var cx=ML+sw*i+sw/2;
     doc.text("Signature & Seal",cx,y,{align:"center"});
     var ln=doc.splitTextToSize(c.sig[i],sw-4);
     var yy=y+4.5*S;ln.forEach(function(l){doc.text(l,cx,yy,{align:"center"});yy+=3.4*S;});
+  }
   }
   return y;
 }
@@ -676,7 +713,7 @@ function wire(){
     else if(e.key==="ArrowUp"){e.preventDefault();if(idx>0){items[idx].classList.remove("active");items[idx-1].classList.add("active");items[idx-1].scrollIntoView({block:"nearest"});}}
     else if(e.key==="Enter"){var a=box.querySelector(".active");if(a){e.preventDefault();var w=WORKS.filter(function(x){return x.sno==a.getAttribute("data-sno");})[0];if(w)chooseWork(w);}}
   });
-  ["f_scheme","f_cost","f_ratio","f_fy","f_sector","f_sansad","f_gp","f_block","f_district","f_outcome","f_utility","f_ibs_on","f_ben_name","f_ben_jc","f_ben_cat","f_conv_on","f_conv_dept","f_conv_share","f_conv_deptshare","f_conv_cat","f_conv_noc","f_conv_tech","f_conv_memo"].forEach(function(id){
+  ["f_scheme","f_cost","f_ratio","f_fy","f_sector","f_sansad","f_gp","f_block","f_district","f_outcome","f_utility","f_ibs_on","f_ben_name","f_ben_jc","f_ben_cat","f_conv_on","f_conv_dept","f_conv_share","f_conv_deptshare","f_conv_cat","f_conv_noc","f_conv_tech","f_conv_memo","f_sig1","f_sig2","f_sig3","f_sig1_on","f_sig2_on","f_sig3_on"].forEach(function(id){
     var el=$(id); if(!el)return; el.addEventListener("input",render); el.addEventListener("change",render);
   });
   $("f_gp").addEventListener("change",function(){ if(selected){ /* refresh auto-draft anchors if blank */ } });
@@ -713,7 +750,7 @@ var I18N={ bn:{
  "form.cost":"আনুমানিক খরচ (টাকা)","form.ratio":"মজুরি : সামগ্রী","form.fy":"অর্থবর্ষ","form.sector":"ওয়ার্ক সেক্টর",
  "form.ibs":"ব্যক্তিগত উপভোক্তা (IBS) — ঐচ্ছিক","form.ibs.on":"এটি একটি ব্যক্তিগত/গোষ্ঠী উপভোক্তা কাজ","form.ben.name":"উপভোক্তার নাম","form.ben.jc":"জব কার্ড নম্বর","form.ben.cat":"উপভোক্তার শ্রেণি",
  "form.conv":"কনভারজেন্স — ঐচ্ছিক","form.conv.on":"এই কাজে কনভারজেন্স আছে","form.conv.dept":"কনভারজিং দপ্তর ও স্কিম","form.conv.share":"VB-G RAM G অংশ (টাকা)","form.conv.deptshare":"দপ্তরের অংশ (টাকা)","form.conv.cat":"কনভারজেন্স ধরন","form.conv.noc":"NOC পাওয়া গেছে?","form.conv.tech":"টেকনিক্যাল হলে — প্রদত্ত জ্ঞান","form.conv.memo":"NOC মেমো নম্বর ও তারিখ",
- "form.narr":"বিবরণ ও চেকলিস্ট — স্বয়ংক্রিয়, সম্পাদনাযোগ্য","form.outcome":"সার্টিফিকেট-১ · প্রত্যাশিত ফল/উৎপাদনশীলতা ও স্থায়িত্ব","form.utility":"সার্টিফিকেট-১ · কাজের উপযোগিতা","form.checklists":"প্রতিটি কমপ্লায়েন্স আইটেম Yes / No সেট করুন।","form.chkreset":"ডিফল্টে রিসেট",
+ "form.narr":"বিবরণ ও চেকলিস্ট — স্বয়ংক্রিয়, সম্পাদনাযোগ্য","form.outcome":"সার্টিফিকেট-১ · প্রত্যাশিত ফল/উৎপাদনশীলতা ও স্থায়িত্ব","form.utility":"সার্টিফিকেট-১ · কাজের উপযোগিতা","form.checklists":"প্রতিটি কমপ্লায়েন্স আইটেম Yes / No সেট করুন।","form.chkreset":"ডিফল্টে রিসেট","form.sig":"স্বাক্ষর প্যানেল — ঐচ্ছিক ও সম্পাদনযোগ্য","form.sig.hint":"প্রতিটি প্যানেল চালু/বন্ধ করুন ও লেখা সম্পাদনা করুন। ফাঁকা রাখলে GP / ব্লক থেকে স্বয়ংক্রিয় লেখা ব্যবহৃত হবে।","form.sig1":"প্যানেল ১ (নির্মাণ সহায়ক)","form.sig2":"প্যানেল ২ (JE / TA)","form.sig3":"প্যানেল ৩ (প্রোগ্রাম অফিসার / BDO)",
  "form.generate":"৮টি সার্টিফিকেট তৈরি করুন (ZIP)","form.combined":"একসাথে PDF প্রিন্ট / সেভ করুন (৮টি)","form.status.ready":"শুরু করতে একটি কাজ বেছে নিন। আপনার অবস্থান শুধু এই ডিভাইসে মনে রাখা হয়।",
  "prev.empty":"আপনি ফর্ম পূরণ করলে এখানে ৮টি সার্টিফিকেট প্রিভিউ হবে।","foot.uploader":"সার্টিফিকেট আপলোডার","foot.repo":"GitHub",
  "foot.disc":"VB-G RAM G / VBGRAMG এবং সংশ্লিষ্ট সরকারি নাম ভারত সরকার / রাজ্য সরকারের সম্পত্তি। এটি Vision Technologies and Robotics-এর একটি স্বাধীন টুল, কোনো সরকারি সংস্থার সাথে সম্পর্কিত বা অনুমোদিত নয়। তৈরি সার্টিফিকেটে অনুমোদিত আধিকারিকদের স্বাক্ষর ও সিল প্রয়োজন।"
@@ -725,7 +762,7 @@ var I18N={ bn:{
  "form.cost":"अनुमानित लागत (रु.)","form.ratio":"मज़दूरी : सामग्री","form.fy":"वित्तीय वर्ष","form.sector":"वर्क सेक्टर",
  "form.ibs":"व्यक्तिगत लाभार्थी (IBS) — वैकल्पिक","form.ibs.on":"यह एक व्यक्तिगत/समूह लाभार्थी कार्य है","form.ben.name":"लाभार्थी का नाम","form.ben.jc":"जॉब कार्ड नंबर","form.ben.cat":"लाभार्थी श्रेणी",
  "form.conv":"कन्वर्जेंस — वैकल्पिक","form.conv.on":"इस कार्य में कन्वर्जेंस है","form.conv.dept":"कन्वर्जिंग विभाग व स्कीम","form.conv.share":"VB-G RAM G हिस्सा (रु.)","form.conv.deptshare":"विभागीय हिस्सा (रु.)","form.conv.cat":"कन्वर्जेंस प्रकार","form.conv.noc":"NOC प्राप्त?","form.conv.tech":"तकनीकी होने पर — प्रदत्त ज्ञान","form.conv.memo":"NOC मेमो नंबर व तारीख",
- "form.narr":"विवरण व चेकलिस्ट — स्वतः, संपादन योग्य","form.outcome":"सर्टिफिकेट-1 · अपेक्षित परिणाम/उत्पादकता व टिकाऊपन","form.utility":"सर्टिफिकेट-1 · कार्य की उपयोगिता","form.checklists":"प्रत्येक अनुपालन आइटम Yes / No सेट करें।","form.chkreset":"डिफ़ॉल्ट पर रीसेट",
+ "form.narr":"विवरण व चेकलिस्ट — स्वतः, संपादन योग्य","form.outcome":"सर्टिफिकेट-1 · अपेक्षित परिणाम/उत्पादकता व टिकाऊपन","form.utility":"सर्टिफिकेट-1 · कार्य की उपयोगिता","form.checklists":"प्रत्येक अनुपालन आइटम Yes / No सेट करें।","form.chkreset":"डिफ़ॉल्ट पर रीसेट","form.sig":"हस्ताक्षर पैनल — वैकल्पिक व संपादन योग्य","form.sig.hint":"प्रत्येक पैनल चालू/बंद करें और टेक्स्ट संपादित करें। खाली छोड़ने पर GP / ब्लॉक से स्वतः टेक्स्ट उपयोग होगा।","form.sig1":"पैनल 1 (निर्माण सहायक)","form.sig2":"पैनल 2 (JE / TA)","form.sig3":"पैनल 3 (प्रोग्राम ऑफिसर / BDO)",
  "form.generate":"8 सर्टिफिकेट बनाएँ (ZIP)","form.combined":"संयुक्त PDF प्रिंट / सेव करें (सभी 8)","form.status.ready":"शुरू करने के लिए एक कार्य चुनें। आपका स्थान केवल इसी डिवाइस पर याद रखा जाता है।",
  "prev.empty":"फ़ॉर्म भरते ही यहाँ 8 सर्टिफिकेट प्रीव्यू होंगे।","foot.uploader":"सर्टिफिकेट अपलोडर","foot.repo":"GitHub",
  "foot.disc":"VB-G RAM G / VBGRAMG और संबंधित सरकारी नाम भारत सरकार / राज्य सरकार की संपत्ति हैं। यह Vision Technologies and Robotics का एक स्वतंत्र टूल है, किसी सरकारी निकाय से संबद्ध या अनुमोदित नहीं। तैयार सर्टिफिकेट पर अधिकृत अधिकारियों के हस्ताक्षर व मुहर आवश्यक हैं।"

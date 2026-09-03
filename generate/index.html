@@ -219,6 +219,7 @@ footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
 </div></footer>
 
 <script src="lib/jspdf.umd.min.js"></script>
+<script src="lib/inr-font.js"></script>
 <script>
 /* ========================= constants & template text ========================= */
 var GEN_TEXT = "Generated using VisionTech Certificate generator for VBGRAMG";
@@ -260,6 +261,9 @@ function $(id){return document.getElementById(id);}
 function esc(s){return (s==null?"":String(s)).replace(/[&<>"]/g,function(c){return{"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c];});}
 function num(v){var n=parseFloat(String(v||"").replace(/[, ]/g,""));return isNaN(n)?0:n;}
 function todayStr(){var d=new Date();var m=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];return ("0"+d.getDate()).slice(-2)+"-"+m[d.getMonth()]+"-"+d.getFullYear();}
+function fmtINR(v){var n=num(v);if(!n)return "";try{return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);}catch(e){return "₹"+n.toFixed(2);}}
+function cellText(cell){ if(cell&&typeof cell==='object'&&'t' in cell) return cell.t; return cell==null?"":cell; }
+function amtCell(v){ var s=fmtINR(v); return s?{t:s,f:'INR'}:""; }
 
 /* cookies (client-side only) */
 function setCookie(o){try{document.cookie=COOKIE+"="+encodeURIComponent(JSON.stringify(o))+";path=/;max-age=31536000;samesite=lax";}catch(e){}}
@@ -383,7 +387,7 @@ function basic(no,m){
   rows.push(["Name of Gram Panchayat",m.gp]);
   rows.push(["Name of Block",m.block]);
   rows.push(["Name of District",m.district]);
-  rows.push([costLbl, m.cost?String(m.cost):""]);
+  rows.push([costLbl, amtCell(m.cost)]);
   if(no!==1) rows.push([ratioLbl,m.ratio]);
   if(no===5){ rows.push(["Name of Beneficiary",m.ibs?m.benName:""]);rows.push(["Job Card No.",m.ibs?m.benJC:""]);rows.push(["Category of Beneficiary",m.ibs?m.benCat:""]); }
   return rows;
@@ -408,11 +412,11 @@ function buildCert(no,m){
     c.tableTitle="CONVERGENCE-RELATED DETAILS:"; c.tableHead=["Criteria","Details"];
     if(m.conv){ c.table=[
       ["Converging Department & Scheme",m.convDept],
-      ["Estimated VB-G RAM G share (Rs.)",String(m.convShare)],
+      ["Estimated VB-G RAM G share (Rs.)",amtCell(m.convShare)],
       ["Convergence category (Technical / Fund share)",m.convCat],
       ["If Technical, type of technical knowledge provided",m.convTech],
-      ["If fund share, Estimated Departmental share (Rs.)",String(m.convDeptShare)],
-      ["Total Estimated Cost of the work (Rs.)",String(m.convTotal)],
+      ["If fund share, Estimated Departmental share (Rs.)",amtCell(m.convDeptShare)],
+      ["Total Estimated Cost of the work (Rs.)",amtCell(m.convTotal)],
       ["Whether NOC received from converging Department (Yes/No)",m.convNOC],
       ["Memo No. & Date of the converging department",m.convMemo]
     ];} else { c.table=[["Convergence component","NA"]]; c.note="This work has no convergence component — Not Applicable."; }
@@ -425,12 +429,12 @@ function buildAll(m){var a=[];for(var i=1;i<=8;i++)a.push(buildCert(i,m));return
 /* ========================= HTML preview ========================= */
 function certHTML(c){
   var h='<div class="cert"><div class="ch">'+esc(c.header)+'</div><div class="ct">'+esc(c.title)+'</div>';
-  h+='<table>'+c.basic.map(function(r){return '<tr><td class="lbl">'+esc(r[0])+'</td><td>'+esc(r[1])+'</td></tr>';}).join("")+'</table>';
+  h+='<table>'+c.basic.map(function(r){return '<tr><td class="lbl">'+esc(r[0])+'</td><td>'+esc(cellText(r[1]))+'</td></tr>';}).join("")+'</table>';
   if(c.note) h+='<p class="cert-para na">'+esc(c.note)+'</p>';
   if(c.tableTitle) h+='<div class="sec">'+esc(c.tableTitle)+'</div>';
   if(c.table){
     h+='<table><tr>'+c.tableHead.map(function(x){return '<th>'+esc(x)+'</th>';}).join("")+'</tr>';
-    h+=c.table.map(function(row){return '<tr>'+row.map(function(cell,i){var w=(c.tableHead.length===3&&i===0)?' class="lbl"':'';return '<td'+w+'>'+esc(cell)+'</td>';}).join("")+'</tr>';}).join("");
+    h+=c.table.map(function(row){return '<tr>'+row.map(function(cell,i){var w=(c.tableHead.length===3&&i===0)?' class="lbl"':'';return '<td'+w+'>'+esc(cellText(cell))+'</td>';}).join("")+'</tr>';}).join("");
     h+='</table>';
   }
   (c.sections||[]).forEach(function(s){ h+='<div class="sec">'+esc(s.title)+'</div><div class="cert-para narr">'+esc(s.body)+'</div>'; });
@@ -447,31 +451,29 @@ function render(){
 }
 
 /* ========================= PDF generation ========================= */
-var PW=210,PH=297,ML=15,MR=15,MT=16,MBF=16,CW=210-30;
+var PW=210,PH=297,ML=15,MR=15,MT=14,MBF=12,CW=210-30;
 function rnd(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
 function newDoc(){ return new jspdf.jsPDF({unit:"mm",format:"a4",encryption:{userPassword:"",ownerPassword:rnd(),userPermissions:["print"]}}); }
+function regFont(doc){ try{ doc.addFileToVFS("INR.ttf", window.__INR_FONT); doc.addFont("INR.ttf","INR","normal"); }catch(e){} }
 
-function certPDF(c,m){
-  var doc=newDoc();
-  doc.setProperties({title:"VBGRAMG Certificate "+c.no+" - "+(m.permissible||""),subject:"VB-G RAM G work certificate",author:"Vision Technologies and Robotics",keywords:"VBGRAMG, VB-G RAM G, MGNREGA, certificate, "+m.gp,creator:GEN_TEXT});
+/* draw one certificate at scale S; returns final y (caller checks page count) */
+function drawCert(doc,c,m,S){
   var y=MT;
   function space(hh){ if(y+hh>PH-MBF){ doc.addPage(); y=MT; } }
-  function center(t,size,bold){ doc.setFont("helvetica",bold?"bold":"normal");doc.setFontSize(size);var lines=doc.splitTextToSize(t,CW);lines.forEach(function(ln){space(size*0.5);doc.text(ln,PW/2,y,{align:"center"});y+=size*0.42+1.2;}); }
-  function para(t,size){ doc.setFont("helvetica","normal");doc.setFontSize(size);var lines=doc.splitTextToSize(t,CW);lines.forEach(function(ln){space(size*0.5);doc.text(ln,ML,y);y+=size*0.42+1.1;}); }
-  function secTitle(t){ y+=1.5;space(6);doc.setFont("helvetica","bold");doc.setFontSize(10);doc.text(t,ML,y);y+=4.2; }
+  function center(t,size,bold){ doc.setFont("helvetica",bold?"bold":"normal");doc.setFontSize(size*S);var L=doc.splitTextToSize(t,CW);L.forEach(function(ln){var lh=size*S*0.42+1.0*S;space(lh);doc.text(ln,PW/2,y,{align:"center"});y+=lh;}); }
+  function para(t,size){ doc.setFont("helvetica","normal");doc.setFontSize(size*S);var L=doc.splitTextToSize(t,CW);L.forEach(function(ln){var lh=size*S*0.42+1.0*S;space(lh);doc.text(ln,ML,y);y+=lh;}); }
+  function secTitle(t){ y+=2.4*S;space(6*S);doc.setFont("helvetica","bold");doc.setFontSize(9.5*S);doc.text(t,ML,y);y+=3.9*S; }
   function table(head,rows,colW){
-    doc.setFontSize(9);
+    var lh=3.9*S, pad=2.4*S; doc.setFontSize(9*S);
     function drawRow(cells,isHead){
-      doc.setFont("helvetica",isHead?"bold":"normal");
-      var cellLines=cells.map(function(t,i){return doc.splitTextToSize(String(t==null?"":t),colW[i]-3);});
-      var rh=Math.max.apply(null,cellLines.map(function(l){return l.length;}))*4.0+2.6;
-      space(rh);
-      var x=ML;
+      var meta=cells.map(function(cell,i){var isInr=cell&&cell.f==="INR";doc.setFont(isInr?"INR":"helvetica",isInr?"normal":(isHead?"bold":"normal"));return {lines:doc.splitTextToSize(String(cellText(cell)==null?"":cellText(cell)),colW[i]-3),inr:isInr};});
+      var rh=Math.max.apply(null,meta.map(function(o){return o.lines.length;}))*lh+pad;
+      space(rh); var x=ML;
       for(var i=0;i<cells.length;i++){
+        if(isHead){doc.setFillColor(238,242,251);doc.rect(x,y,colW[i],rh,"F");}
         doc.rect(x,y,colW[i],rh);
-        if(isHead){doc.setFillColor(238,242,251);doc.rect(x,y,colW[i],rh,"F");doc.rect(x,y,colW[i],rh);}
-        var ty=y+3.6;
-        cellLines[i].forEach(function(ln){doc.text(ln,x+1.5,ty);ty+=4.0;});
+        doc.setFont(meta[i].inr?"INR":"helvetica",meta[i].inr?"normal":(isHead?"bold":"normal"));
+        var ty=y+lh-0.5; meta[i].lines.forEach(function(ln){doc.text(ln,x+1.4,ty);ty+=lh;});
         x+=colW[i];
       }
       y+=rh;
@@ -480,10 +482,10 @@ function certPDF(c,m){
     rows.forEach(function(r){drawRow(r,false);});
   }
 
-  center(c.header,10,false); y+=0.5;
-  center(c.title,11.5,true); y+=1.5;
+  center(c.header,9.5,false); y+=0.3*S;
+  center(c.title,11,true); y+=1.2*S;
   table(["Particulars","Details"],c.basic,[CW*0.42,CW*0.58]);
-  if(c.note){ y+=1; doc.setTextColor(120);para(c.note,9.5);doc.setTextColor(0); }
+  if(c.note){ y+=0.8*S; doc.setTextColor(120);para(c.note,9);doc.setTextColor(0); }
   if(c.tableTitle) secTitle(c.tableTitle);
   if(c.table){
     var cw;
@@ -492,22 +494,35 @@ function certPDF(c,m){
     else cw=[CW*0.12,CW*0.26,CW*0.32,CW*0.30];
     table(c.tableHead,c.table,cw);
   }
-  (c.sections||[]).forEach(function(s){ secTitle(s.title); para(s.body,9.5); });
-  secTitle("CERTIFICATION:"); para(c.certify,9.5);
-  y+=1.5; para(c.date,9.5);
+  (c.sections||[]).forEach(function(s){ secTitle(s.title); para(s.body,9); });
+  secTitle("CERTIFICATION:"); para(c.certify,9);
+  y+=1.2*S; para(c.date,9);
   // signatories
-  y+=16; space(20);
-  var sw=CW/3;
-  doc.setFontSize(8.5);doc.setFont("helvetica","normal");
+  y+=13*S; space(18*S);
+  var sw=CW/3; doc.setFontSize(8.2*S);doc.setFont("helvetica","normal");
   for(var i=0;i<3;i++){
     var cx=ML+sw*i+sw/2;
     doc.text("Signature & Seal",cx,y,{align:"center"});
     var ln=doc.splitTextToSize(c.sig[i],sw-4);
-    var yy=y+5;ln.forEach(function(l){doc.text(l,cx,yy,{align:"center"});yy+=3.6;});
+    var yy=y+4.5*S;ln.forEach(function(l){doc.text(l,cx,yy,{align:"center"});yy+=3.4*S;});
   }
-  // footer on every page
+  return y;
+}
+
+function certPDF(c,m){
+  // pick the largest scale that keeps the certificate on ONE A4 page
+  var scales=[1,0.95,0.9,0.85,0.8,0.75,0.7,0.66,0.62,0.58], S=scales[scales.length-1];
+  for(var i=0;i<scales.length;i++){
+    var md=new jspdf.jsPDF({unit:"mm",format:"a4"}); regFont(md);
+    drawCert(md,c,m,scales[i]);
+    if(md.getNumberOfPages()===1){ S=scales[i]; break; }
+  }
+  var doc=newDoc(); regFont(doc);
+  doc.setProperties({title:"VBGRAMG Certificate "+c.no+" - "+(m.permissible||""),subject:"VB-G RAM G work certificate",author:"Vision Technologies and Robotics",keywords:"VBGRAMG, VB-G RAM G, MGNREGA, certificate, "+m.gp,creator:GEN_TEXT});
+  drawCert(doc,c,m,S);
+  // small, muted footer on every page
   var pages=doc.getNumberOfPages();
-  for(var p=1;p<=pages;p++){ doc.setPage(p);doc.setDrawColor(210);doc.line(ML,PH-11,PW-MR,PH-11);doc.setFont("helvetica","normal");doc.setFontSize(7);doc.setTextColor(140);doc.text(GEN_TEXT,PW/2,PH-7,{align:"center"});doc.setTextColor(0); }
+  for(var p=1;p<=pages;p++){ doc.setPage(p);doc.setDrawColor(235);doc.line(ML,PH-8.5,PW-MR,PH-8.5);doc.setFont("helvetica","normal");doc.setFontSize(5.5);doc.setTextColor(180);doc.text(GEN_TEXT,PW/2,PH-5.5,{align:"center"});doc.setTextColor(0); }
   return new Uint8Array(doc.output("arraybuffer"));
 }
 

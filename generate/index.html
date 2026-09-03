@@ -350,6 +350,23 @@ function prefillFromCookie(){
   if(c.blockLast)$("f_block").value=c.blockLast;
   if(c.gpLast)$("f_gp").value=c.gpLast;
   if(c.sansadLast)$("f_sansad").value=c.sansadLast;
+  // remembered optional / office-level fields
+  if(c.fy)$("f_fy").value=c.fy;
+  if(c.ratio)$("f_ratio").value=c.ratio;
+  if(c.sector)$("f_sector").value=c.sector;
+  ["1","2","3"].forEach(function(i){
+    if(c["sig"+i]!=null && c["sig"+i]!=="") $("f_sig"+i).value=c["sig"+i];
+    if(c["sig"+i+"on"]!=null) $("f_sig"+i+"_on").checked=!!c["sig"+i+"on"];
+  });
+}
+// persist stable optional fields locally (signatories + FY/ratio/sector). Per-work
+// fields (work, cost, convergence amounts, IBS details, narratives, checklists) are
+// intentionally NOT saved, since they change with every work.
+function saveOpts(){
+  var c=getCookie();
+  c.fy=$("f_fy").value; c.ratio=$("f_ratio").value; c.sector=$("f_sector").value;
+  ["1","2","3"].forEach(function(i){ c["sig"+i]=$("f_sig"+i).value; c["sig"+i+"on"]=$("f_sig"+i+"_on").checked; });
+  setCookie(c);
 }
 
 /* ========================= work picker ========================= */
@@ -478,7 +495,7 @@ function buildCert(no,m){
     ];
   } else if(no===2){ c.tableTitle="VERIFICATION ON NON-DUPLICATION OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CHECKS_META.c2.labels.map(function(lab,i){return [lab, ynCell(yn("c2",i)), ""];}); }
   else if(no===3){ c.tableTitle="VERIFICATION ON NON-SPLITTING OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CHECKS_META.c3.labels.map(function(lab,i){return [lab, ynCell(yn("c3",i)), ""];}); }
-  else if(no===4){ c.tableTitle="VERIFICATION:"; c.tableHead=["Sl. No.","Master Category","Sub Category","Permissible Work Description"]; c.table=[[String(m.sno),m.cat,m.sub,m.permissible]]; }
+  else if(no===4){ c.tableTitle="VERIFICATION:"; c.tableHead=["Sl. No.","Master Category","Sub Category","Permissible Work Description"]; c.table=[[String(m.sno),m.cat,m.sub,m.permissible].map(cd)]; }
   else if(no===5){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)"]; c.table=CHECKS_META.c5.labels.map(function(lab,i){return [lab, ynCell(m.ibs?yn("c5",i):"NA")];}); if(!m.ibs)c.note="Not an Individual Beneficiary Scheme (IBS) work — Not Applicable."; }
   else if(no===6){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)","Remarks"]; c.table=[[CHECKS_META.c6.labels[0], ynCell(yn("c6",0)), ""]]; }
   else if(no===7){
@@ -671,6 +688,7 @@ function persistLoc(m){
   c.block=[m.block].concat((c.block||[]).filter(function(x){return x!==m.block;})).slice(0,12);
   c.gp=[m.gp].concat((c.gp||[]).filter(function(x){return x!==m.gp;})).slice(0,12);
   setCookie(c); fillList("dl_block",c.block); fillList("dl_gp",c.gp);
+  saveOpts();
 }
 function ready(m){
   if(!selected){ setStatus(tr("form.status.needwork")||"Please choose a work first.","err"); return false; }
@@ -733,6 +751,10 @@ function wire(){
     render();
   });
   $("chkReset").addEventListener("click",function(){ initChecks(); buildCheckEditor(); render(); });
+  // remember stable optional fields on the device
+  ["f_fy","f_ratio","f_sector","f_sig1","f_sig2","f_sig3","f_sig1_on","f_sig2_on","f_sig3_on"].forEach(function(id){
+    var el=$(id); if(el) el.addEventListener("change",saveOpts);
+  });
   // pick work directly by serial number
   var sno=$("f_sno");
   if(sno) sno.addEventListener("input",function(){

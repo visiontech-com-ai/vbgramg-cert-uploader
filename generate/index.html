@@ -337,7 +337,7 @@ Promise.all([
   fetch("wb-lgd.json").then(function(r){return r.json();})
 ]).then(function(res){
   WORKS=res[0]; TREE=(res[1]&&res[1].tree)||{}; DISTRICTS=(res[1]&&res[1].districts)||Object.keys(TREE);
-  initChecks(); initLocation(); prefillFromCookie(); buildCheckEditor(); wire(); renderCounts(); updateDerived();
+  initChecks(); initLocation(); prefillFromCookie(); buildCheckEditor(); wire(); fetchCounts(); updateDerived();
 }).catch(function(e){ $("status").textContent="Could not load data: "+e; $("status").className="status err"; });
 
 /* ========================= location ========================= */
@@ -729,7 +729,7 @@ function generate(){
       for(var i=0;i<8;i++){ files.push({name:"vision-vbgramg-cert-"+("0"+(i+1)).slice(-2)+".pdf", data:certPDF(certs[i],m)}); }
       var zip=zipStore(files);
       download(zip,"vision-vbgramg-certificates.zip");
-      bumpCount("zip");
+      hitCount("zip");
       if(typeof gtag==="function") gtag("event","generate_certificates",{sno:m.sno,files:8});
       setStatus((tr("form.status.done")||"Done — downloaded")+" vision-vbgramg-certificates.zip ("+(zip.size/1024).toFixed(0)+" KB, 8 PDFs).","ok");
     }catch(e){ setStatus("Error: "+e.message,"err"); }
@@ -743,7 +743,7 @@ function generateCombined(){
       var doc=combinedDoc(m);
       var blob=doc.output("blob"), url=URL.createObjectURL(blob);
       var w=window.open(url,"_blank");
-      bumpCount("pdf");
+      hitCount("pdf");
       if(typeof gtag==="function") gtag("event","combined_pdf",{sno:m.sno});
       if(!w){ download(blob,"vision-vbgramg-certificates-combined.pdf"); setStatus((tr("form.status.combdl")||"Downloaded the combined PDF (pop-up was blocked)."),"ok"); }
       else { setStatus((tr("form.status.combopen")||"Opened the combined 8-page PDF in a new tab — use its Print or Save."),"ok"); setTimeout(function(){URL.revokeObjectURL(url);},60000); }
@@ -751,10 +751,28 @@ function generateCombined(){
   },30);
 }
 function setStatus(t,k){var s=$("status");s.textContent=t;s.className="status"+(k?" "+k:"");}
-/* per-device press counter for the generate buttons */
-function getCnt(k){ try{ return parseInt(localStorage.getItem(k)||"0",10)||0; }catch(e){ return 0; } }
-function bumpCount(kind){ var k=kind==="pdf"?"vbg_cnt_pdf":"vbg_cnt_zip"; try{ localStorage.setItem(k,String(getCnt(k)+1)); }catch(e){} renderCounts(); }
-function renderCounts(){ var el=$("genCount"); if(!el) return; el.innerHTML="On this device — ZIP: <b>"+getCnt("vbg_cnt_zip")+"</b> · Combined: <b>"+getCnt("vbg_cnt_pdf")+"</b>"; }
+/* server-side global usage counter (Abacus — https://abacus.jasoncameron.dev) */
+var CNT={ base:"https://abacus.jasoncameron.dev", ns:"visiontech-vbgramg", zip:"cert_zip", pdf:"cert_pdf" };
+var CNTVAL={ zip:null, pdf:null };
+function renderCounts(){
+  var el=$("genCount"); if(!el) return;
+  if(CNTVAL.zip==null && CNTVAL.pdf==null){ el.textContent=""; return; }
+  var z=CNTVAL.zip||0, p=CNTVAL.pdf||0, total=z+p;
+  el.innerHTML="Certificates generated (all users): <b>"+total.toLocaleString()+"</b> &nbsp;·&nbsp; ZIP "+z.toLocaleString()+" · Combined "+p.toLocaleString();
+}
+function fetchCounts(){
+  ["zip","pdf"].forEach(function(k){
+    fetch(CNT.base+"/get/"+CNT.ns+"/"+CNT[k]).then(function(r){return r.json();}).then(function(j){
+      CNTVAL[k]=(j&&typeof j.value==="number")?j.value:0; renderCounts();
+    }).catch(function(){ if(CNTVAL[k]==null){CNTVAL[k]=0;} renderCounts(); });
+  });
+}
+function hitCount(kind){
+  var k=(kind==="pdf")?"pdf":"zip";
+  fetch(CNT.base+"/hit/"+CNT.ns+"/"+CNT[k]).then(function(r){return r.json();}).then(function(j){
+    if(j&&typeof j.value==="number"){ CNTVAL[k]=j.value; renderCounts(); }
+  }).catch(function(){});
+}
 
 /* ========================= wiring ========================= */
 function wire(){

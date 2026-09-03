@@ -91,8 +91,9 @@ details.adv .body{padding:.2rem .6rem .7rem}
 .cert{background:#fff;color:#111;border:1px solid #d9dee7;border-radius:6px;padding:16px 18px;margin:0 auto 16px;max-width:720px;font-size:12px;line-height:1.4}
 .cert .ch{text-align:center;font-weight:600;font-size:11px;color:#333}
 .cert .ct{text-align:center;font-weight:800;font-size:12.5px;margin:4px 0 10px;color:#00386f}
-.cert .sec{font-weight:800;margin:9px 0 4px;color:#111}
-.cert table{width:100%;border-collapse:collapse;margin:4px 0}
+.cert .sec{font-weight:800;margin:13px 0 5px;color:#111}
+.cert table{width:100%;border-collapse:collapse;margin:5px 0 2px}
+.cert .cert-para{margin:8px 0}
 .cert td,.cert th{border:1px solid #b9c2d0;padding:3px 6px;vertical-align:top;text-align:left}
 .cert th{background:#eef2fb;font-size:11px}
 .cert .lbl{width:42%;color:#333}
@@ -523,7 +524,7 @@ function drawCert(doc,c,m,S){
   function space(hh){ if(y+hh>PH-MBF){ doc.addPage(); y=MT; } }
   function center(t,size,bold){ doc.setFont("helvetica",bold?"bold":"normal");doc.setFontSize(size*S);var L=doc.splitTextToSize(t,CW);L.forEach(function(ln){var lh=size*S*0.42+1.0*S;space(lh);doc.text(ln,PW/2,y,{align:"center"});y+=lh;}); }
   function para(t,size){ doc.setFont("helvetica","normal");doc.setFontSize(size*S);var L=doc.splitTextToSize(t,CW);L.forEach(function(ln){var lh=size*S*0.42+1.0*S;space(lh);doc.text(ln,ML,y);y+=lh;}); }
-  function secTitle(t){ y+=2.4*S;space(6*S);doc.setFont("helvetica","bold");doc.setFontSize(9.5*S);doc.text(t,ML,y);y+=3.9*S; }
+  function secTitle(t){ y+=4.8*S;space(8*S);doc.setFont("helvetica","bold");doc.setFontSize(9.5*S);doc.text(t,ML,y);y+=3.6*S; }
   function table(head,rows,colW){
     var lh=3.9*S, pad=2.4*S; doc.setFontSize(9*S);
     function drawRow(cells,isHead){
@@ -546,7 +547,7 @@ function drawCert(doc,c,m,S){
   center(c.header,9.5,false); y+=0.3*S;
   center(c.title,11,true); y+=1.2*S;
   table(["Particulars","Details"],c.basic,[CW*0.42,CW*0.58]);
-  if(c.note){ y+=0.8*S; doc.setTextColor(120);para(c.note,9);doc.setTextColor(0); }
+  if(c.note){ y+=3*S; doc.setTextColor(120);para(c.note,9);doc.setTextColor(0); }
   if(c.tableTitle) secTitle(c.tableTitle);
   if(c.table){
     var cw;

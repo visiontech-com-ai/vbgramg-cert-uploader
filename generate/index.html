@@ -556,7 +556,7 @@ function certHTML(c){
 }
 function render(){
   var box=$("preview");
-  if(!selected){ box.innerHTML='<p class="muted">'+(document.querySelector('[data-i18n="prev.empty"]')?tr("prev.empty"):"Choose a work to preview the certificates.")+'</p>'; return; }
+  if(!selected){ box.innerHTML='<p class="muted">'+esc(tr("prev.empty")||"The 8 certificates will preview here as you fill the form.")+'</p>'; return; }
   var m=model();
   var d=sigDefaults(m); for(var i=1;i<=3;i++){ var el=$("f_sig"+i); if(el) el.placeholder=d[i-1]; }
   box.innerHTML=buildAll(m).map(certHTML).join("");

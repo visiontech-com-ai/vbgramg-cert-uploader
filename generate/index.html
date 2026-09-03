@@ -318,6 +318,9 @@ function todayStr(){var d=new Date();var m=["Jan","Feb","Mar","Apr","May","Jun",
 function fmtINR(v){var n=num(v);if(!n)return "";try{return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);}catch(e){return "₹"+n.toFixed(2);}}
 function cellText(cell){ if(cell&&typeof cell==='object'&&'t' in cell) return cell.t; return cell==null?"":cell; }
 function amtCell(v){ var s=fmtINR(v); return s?{t:s,f:'INR'}:""; }
+function fmtINR0(v){var n=num(v);try{return new Intl.NumberFormat('en-IN',{style:'currency',currency:'INR',minimumFractionDigits:2,maximumFractionDigits:2}).format(n);}catch(e){return "₹"+n.toFixed(2);}}
+function amtCell0(v){ return {t:fmtINR0(v), f:"INR"}; }   // always shows amount, incl. 0 -> ₹0.00
+function cd(v){ if(v&&typeof v==="object"){ v.b=true; v.c=true; return v; } return {t:(v==null?"":String(v)), b:true, c:true}; } // Details cell: centered + bold
 
 /* cookies (client-side only) */
 function setCookie(o){try{document.cookie=COOKIE+"="+encodeURIComponent(JSON.stringify(o))+";path=/;max-age=31536000;samesite=lax";}catch(e){}}
@@ -480,16 +483,18 @@ function buildCert(no,m){
   else if(no===6){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)","Remarks"]; c.table=[[CHECKS_META.c6.labels[0], ynCell(yn("c6",0)), ""]]; }
   else if(no===7){
     c.tableTitle="CONVERGENCE-RELATED DETAILS:"; c.tableHead=["Criteria","Details"];
-    if(m.conv){ c.table=[
+    var crows;
+    if(m.conv){ crows=[
       ["Converging Department & Scheme",m.convDept],
-      ["Estimated VB-G RAM G share (Rs.)",amtCell(m.convShare)],
+      ["Estimated VB-G RAM G share (Rs.)",amtCell0(m.convShare)],
       ["Convergence category (Technical / Fund share)",m.convCat],
       ["If Technical, type of technical knowledge provided",m.convTech],
-      ["If fund share, Estimated Departmental share (Rs.)",amtCell(m.convDeptShare)],
-      ["Total Estimated Cost of the work (Rs.)",amtCell(m.convTotal)],
+      ["If fund share, Estimated Departmental share (Rs.)",amtCell0(m.convDeptShare)],
+      ["Total Estimated Cost of the work (Rs.)",amtCell0(m.convTotal)],
       ["Whether NOC received from converging Department (Yes/No)",m.convNOC],
       ["Memo No. & Date of the converging department",m.convMemo]
-    ];} else { c.table=[["Convergence component","NA"]]; c.note="This work has no convergence component — Not Applicable."; }
+    ];} else { crows=[["Convergence component","NA"]]; c.note="This work has no convergence component — Not Applicable."; }
+    c.table=crows.map(function(r){ return [r[0], cd(r[1])]; });
   }
   else if(no===8){ c.tableTitle="INFORMATION ON ADHERENCE TO NON-NEGOTIABLE CONDITIONS:"; c.tableHead=["Sl. No.","Non-Negotiable Condition","Compliance Status"]; c.table=CHECKS_META.c8.labels.map(function(lab,i){return [String(i+1),lab, ynCell(yn("c8",i))];}); }
   return c;

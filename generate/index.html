@@ -158,9 +158,11 @@ footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
       <select id="f_district"></select></div>
     <div class="row2">
       <div class="fld"><label data-i18n="form.block">Block</label>
-        <input id="f_block" list="dl_block" autocomplete="off"><datalist id="dl_block"></datalist></div>
+        <select id="f_block"></select>
+        <input id="f_block_other" placeholder="Type block name" style="display:none;margin-top:.3rem" autocomplete="off"></div>
       <div class="fld"><label data-i18n="form.gp">Gram Panchayat</label>
-        <input id="f_gp" list="dl_gp" autocomplete="off"><datalist id="dl_gp"></datalist></div>
+        <select id="f_gp"></select>
+        <input id="f_gp_other" placeholder="Type GP name" style="display:none;margin-top:.3rem" autocomplete="off"></div>
     </div>
     <div class="fld"><label data-i18n="form.sansad">Name &amp; No. of Gram Sansad</label>
       <input id="f_sansad" autocomplete="off" placeholder="e.g. NAIPUKUR PAR - IX"></div>
@@ -308,7 +310,7 @@ function yn(k,i){ var b=CHECK[k][i]; return CHECKS_META[k].lower?(b?"Yes":"No"):
 function ynCell(v){ return {t:v, b:true, c:true}; }   // Yes/No status cell: centered + bold
 
 /* ========================= state ========================= */
-var WORKS=[], DISTRICTS=[], selected=null;
+var WORKS=[], DISTRICTS=[], TREE={}, selected=null;
 var COOKIE="vbg_gen";
 
 function $(id){return document.getElementById(id);}
@@ -332,23 +334,41 @@ Promise.all([
   fetch("works.json").then(function(r){return r.json();}),
   fetch("wb-lgd.json").then(function(r){return r.json();})
 ]).then(function(res){
-  WORKS=res[0]; DISTRICTS=(res[1]&&res[1].districts)||[];
+  WORKS=res[0]; TREE=(res[1]&&res[1].tree)||{}; DISTRICTS=(res[1]&&res[1].districts)||Object.keys(TREE);
   initChecks(); initLocation(); prefillFromCookie(); buildCheckEditor(); wire(); updateDerived();
 }).catch(function(e){ $("status").textContent="Could not load data: "+e; $("status").className="status err"; });
 
 /* ========================= location ========================= */
-function initLocation(){
-  var d=$("f_district"); d.innerHTML='<option value="">Select district…</option>'+DISTRICTS.map(function(x){return '<option>'+esc(x)+'</option>';}).join("");
-  var c=getCookie();
-  fillList("dl_block",(c.block||[]));
-  fillList("dl_gp",(c.gp||[]));
+function fillSelect(sel,arr,placeholder,withOther){
+  var h='<option value="">'+esc(placeholder)+'</option>'+arr.map(function(x){return '<option value="'+esc(x)+'">'+esc(x)+'</option>';}).join("");
+  if(withOther) h+='<option value="__OTHER__">— Other (type…) —</option>';
+  sel.innerHTML=h;
 }
-function fillList(id,arr){$(id).innerHTML=(arr||[]).map(function(x){return '<option value="'+esc(x)+'">';}).join("");}
+function blocksFor(d){ return (d&&TREE[d])?Object.keys(TREE[d]).sort():[]; }
+function gpsFor(d,b){ return (d&&b&&TREE[d]&&TREE[d][b])?TREE[d][b].slice().sort():[]; }
+function toggleOther(kind){ var o=$("f_"+kind+"_other"); if(o) o.style.display=($("f_"+kind).value==="__OTHER__")?"":"none"; }
+function locVal(kind){ var s=$("f_"+kind); if(!s) return ""; if(s.value==="__OTHER__") return (($("f_"+kind+"_other")||{}).value||"").trim(); return (s.value||"").trim(); }
+function initLocation(){
+  fillSelect($("f_district"), Object.keys(TREE).sort(), "Select district…", false);
+  fillSelect($("f_block"), [], "Select block…", true);
+  fillSelect($("f_gp"), [], "Select gram panchayat…", true);
+}
+function onDistrictChange(keepBlock,keepGp){
+  var d=$("f_district").value;
+  fillSelect($("f_block"), blocksFor(d), "Select block…", true);
+  if(keepBlock){ if(blocksFor(d).indexOf(keepBlock)>=0) $("f_block").value=keepBlock; else { $("f_block").value="__OTHER__"; $("f_block_other").value=keepBlock; } }
+  toggleOther("block"); onBlockChange(keepGp);
+}
+function onBlockChange(keepGp){
+  var d=$("f_district").value, b=locVal("block");
+  fillSelect($("f_gp"), gpsFor(d,b), "Select gram panchayat…", true);
+  if(keepGp){ if(gpsFor(d,b).indexOf(keepGp)>=0) $("f_gp").value=keepGp; else { $("f_gp").value="__OTHER__"; $("f_gp_other").value=keepGp; } }
+  toggleOther("gp");
+}
 function prefillFromCookie(){
   var c=getCookie();
-  if(c.district&&DISTRICTS.indexOf(c.district)>=0)$("f_district").value=c.district;
-  if(c.blockLast)$("f_block").value=c.blockLast;
-  if(c.gpLast)$("f_gp").value=c.gpLast;
+  if(c.district&&TREE[c.district])$("f_district").value=c.district;
+  onDistrictChange(c.blockLast,c.gpLast);
   if(c.sansadLast)$("f_sansad").value=c.sansadLast;
   // remembered optional / office-level fields
   if(c.fy)$("f_fy").value=c.fy;
@@ -397,7 +417,7 @@ function chooseWork(w){
 }
 function autoDraft(){
   if(!selected)return;
-  var gp=$("f_gp").value.trim(), theme=catTheme(selected.cat);
+  var gp=locVal("gp"), theme=catTheme(selected.cat);
   if(!$("f_scheme").value.trim()){
     $("f_scheme").value=selected.name+(gp?(" at "+gp):"")+($("f_conv_on").checked&&$("f_conv_dept").value?(" in convergence with "+$("f_conv_dept").value):"");
   }
@@ -437,8 +457,8 @@ function model(){
     sel:selected, fy:$("f_fy").value.trim(), scheme:$("f_scheme").value.trim(),
     sector:$("f_sector").value.trim(), cat:selected?selected.cat:"", sub:selected?selected.sub:"",
     nature:selected?selected.nature:"", benef:benef, benefUP:(benef||"").toUpperCase(),
-    sansad:$("f_sansad").value.trim(), gp:$("f_gp").value.trim(), block:$("f_block").value.trim(),
-    district:$("f_district").value.trim(), cost:cost, ratio:$("f_ratio").value.trim(),
+    sansad:$("f_sansad").value.trim(), gp:locVal("gp"), block:locVal("block"),
+    district:locVal("district"), cost:cost, ratio:$("f_ratio").value.trim(),
     sno:selected?selected.sno:"", permissible:selected?selected.name:"",
     outcome:$("f_outcome").value, utility:$("f_utility").value,
     ibs:ibs, benName:$("f_ben_name").value.trim(), benJC:$("f_ben_jc").value.trim(), benCat:$("f_ben_cat").value.trim(),
@@ -685,9 +705,7 @@ function download(blob,name){var a=document.createElement("a");a.href=URL.create
 function persistLoc(m){
   var c=getCookie();
   c.district=m.district; c.blockLast=m.block; c.gpLast=m.gp; c.sansadLast=m.sansad;
-  c.block=[m.block].concat((c.block||[]).filter(function(x){return x!==m.block;})).slice(0,12);
-  c.gp=[m.gp].concat((c.gp||[]).filter(function(x){return x!==m.gp;})).slice(0,12);
-  setCookie(c); fillList("dl_block",c.block); fillList("dl_gp",c.gp);
+  setCookie(c);
   saveOpts();
 }
 function ready(m){
@@ -738,10 +756,13 @@ function wire(){
     else if(e.key==="ArrowUp"){e.preventDefault();if(idx>0){items[idx].classList.remove("active");items[idx-1].classList.add("active");items[idx-1].scrollIntoView({block:"nearest"});}}
     else if(e.key==="Enter"){var a=box.querySelector(".active");if(a){e.preventDefault();var w=WORKS.filter(function(x){return x.sno==a.getAttribute("data-sno");})[0];if(w)chooseWork(w);}}
   });
-  ["f_scheme","f_cost","f_ratio","f_fy","f_sector","f_sansad","f_gp","f_block","f_district","f_outcome","f_utility","f_ibs_on","f_ben_name","f_ben_jc","f_ben_cat","f_conv_on","f_conv_dept","f_conv_share","f_conv_deptshare","f_conv_cat","f_conv_noc","f_conv_tech","f_conv_memo","f_sig1","f_sig2","f_sig3","f_sig1_on","f_sig2_on","f_sig3_on"].forEach(function(id){
+  ["f_scheme","f_cost","f_ratio","f_fy","f_sector","f_sansad","f_block_other","f_gp_other","f_outcome","f_utility","f_ibs_on","f_ben_name","f_ben_jc","f_ben_cat","f_conv_on","f_conv_dept","f_conv_share","f_conv_deptshare","f_conv_cat","f_conv_noc","f_conv_tech","f_conv_memo","f_sig1","f_sig2","f_sig3","f_sig1_on","f_sig2_on","f_sig3_on"].forEach(function(id){
     var el=$(id); if(!el)return; el.addEventListener("input",render); el.addEventListener("change",render);
   });
-  $("f_gp").addEventListener("change",function(){ if(selected){ /* refresh auto-draft anchors if blank */ } });
+  // cascading District -> Block -> GP (with "Other — type" fallback)
+  $("f_district").addEventListener("change",function(){ onDistrictChange(); render(); });
+  $("f_block").addEventListener("change",function(){ toggleOther("block"); onBlockChange(); render(); });
+  $("f_gp").addEventListener("change",function(){ toggleOther("gp"); render(); });
   $("checkEditor").addEventListener("click",function(e){
     var b=e.target.closest(".seg button"); if(!b)return;
     var seg=b.parentNode, k=seg.getAttribute("data-k"), i=+seg.getAttribute("data-i");

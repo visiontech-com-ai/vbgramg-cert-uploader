@@ -427,7 +427,7 @@ function model(){
   };
 }
 // first-table Details cell -> UPPERCASE + bold (amount cells pass through unchanged)
-function du(v){ if(v&&typeof v==="object") return v; return {t:(v==null?"":String(v)).toUpperCase(), b:true}; }
+function du(v){ if(v&&typeof v==="object"){ v.b=true; return v; } return {t:(v==null?"":String(v)).toUpperCase(), b:true}; }
 function basic(no,m){
   var costLbl = no===1?"Proposed cost of this scheme-":(no===2?"Proposed Cost of the Work (Rs.)":"Estimated Cost of the Work (Rs.)");
   var ratioLbl = no===2?"Wage-Material Ratio (tentative)":"Wage-Material Ratio";
@@ -544,7 +544,7 @@ function buildCheckEditor(){
 var PW=210,PH=297,ML=15,MR=15,MT=14,MBF=12,CW=210-30;
 function rnd(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
 function newDoc(){ return new jspdf.jsPDF({unit:"mm",format:"a4",encryption:{userPassword:"",ownerPassword:rnd(),userPermissions:["print"]}}); }
-function regFont(doc){ try{ doc.addFileToVFS("INR.ttf", window.__INR_FONT); doc.addFont("INR.ttf","INR","normal"); }catch(e){} }
+function regFont(doc){ try{ doc.addFileToVFS("INR.ttf", window.__INR_FONT); doc.addFont("INR.ttf","INR","normal"); if(window.__INR_FONT_BOLD){ doc.addFileToVFS("INR-Bold.ttf", window.__INR_FONT_BOLD); doc.addFont("INR-Bold.ttf","INR","bold"); } }catch(e){} }
 
 /* draw one certificate at scale S; returns final y (caller checks page count) */
 function drawCert(doc,c,m,S){
@@ -558,7 +558,7 @@ function drawCert(doc,c,m,S){
     function drawRow(cells,isHead){
       var meta=cells.map(function(cell,i){
         var isInr=cell&&cell.f==="INR"; var bold=isHead||(cell&&cell.b);
-        doc.setFont(isInr?"INR":"helvetica", isInr?"normal":(bold?"bold":"normal"));
+        doc.setFont(isInr?"INR":"helvetica", bold?"bold":"normal");
         return {lines:doc.splitTextToSize(String(cellText(cell)==null?"":cellText(cell)),colW[i]-3),inr:isInr,bold:bold};
       });
       var rh=Math.max.apply(null,meta.map(function(o){return o.lines.length;}))*lh+pad;
@@ -566,7 +566,7 @@ function drawCert(doc,c,m,S){
       for(var i=0;i<cells.length;i++){
         if(isHead){doc.setFillColor(238,242,251);doc.rect(x,y,colW[i],rh,"F");}
         doc.rect(x,y,colW[i],rh);
-        doc.setFont(meta[i].inr?"INR":"helvetica", meta[i].inr?"normal":(meta[i].bold?"bold":"normal"));
+        doc.setFont(meta[i].inr?"INR":"helvetica", meta[i].bold?"bold":"normal");
         var ch=meta[i].lines.length*lh;
         var ty=y+(rh-ch)/2+lh-1.1;               // vertically centered block
         meta[i].lines.forEach(function(ln){doc.text(ln,x+1.4,ty);ty+=lh;});

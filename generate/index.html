@@ -137,8 +137,13 @@ footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
   <!-- FORM -->
   <div class="panel" id="formPanel">
     <h2 data-i18n="form.work">1 · Choose the work</h2>
+    <div class="fld">
+      <label data-i18n="form.sno">Serial No. of work (1–318)</label>
+      <input id="f_sno" type="number" min="1" max="318" placeholder="e.g. 94" style="max-width:150px">
+      <div class="hint" id="snoName"></div>
+    </div>
     <div class="fld search-wrap">
-      <label data-i18n="form.search">Search the 318 permissible works</label>
+      <label data-i18n="form.search">…or search the 318 permissible works</label>
       <input id="workSearch" type="text" autocomplete="off" placeholder="e.g. plantation, check dam, play ground…" data-i18n-ph="form.search.ph">
       <div id="workResults" class="results" hidden></div>
       <div class="hint" data-i18n="form.search.hint">Type a keyword or the work name; pick from the list.</div>
@@ -348,6 +353,8 @@ function chooseWork(w){
   selected=w;
   $("workSearch").value=w.name;
   $("workResults").hidden=true;
+  if($("f_sno")) $("f_sno").value=w.sno;
+  if($("snoName")) $("snoName").textContent="✓ "+w.name;
   autoDraft();
   updateDerived();
 }
@@ -651,13 +658,24 @@ function wire(){
     render();
   });
   $("chkReset").addEventListener("click",function(){ initChecks(); buildCheckEditor(); render(); });
+  // pick work directly by serial number
+  var sno=$("f_sno");
+  if(sno) sno.addEventListener("input",function(){
+    var v=parseInt(this.value,10); var w=WORKS.filter(function(x){return x.sno===v;})[0]; var nm=$("snoName");
+    if(w){ chooseWork(w); }
+    else if(nm){ nm.textContent=this.value?"— no such work (enter 1–318)":""; }
+  });
+  // select the value on focus so a default like 0 can be typed over without backspacing
+  Array.prototype.forEach.call(document.querySelectorAll("#formPanel input[type=number]"),function(el){
+    el.addEventListener("focus",function(){ var s=this; setTimeout(function(){ try{s.select();}catch(e){} },0); });
+  });
   $("genBtn").addEventListener("click",generate);
 }
 
 /* ========================= i18n (form UI only; certificates stay English) ========================= */
 var I18N={ bn:{
  "hero.h1":"VB-G RAM G সার্টিফিকেট জেনারেটর","hero.p":"কাজ বেছে নিন, কয়েকটি ঘর পূরণ করুন, এবং ৮টি সার্টিফিকেট PDF হিসেবে ডাউনলোড করুন — সম্পূর্ণ আপনার ব্রাউজারে। কোনো লগইন নেই, কোনো সার্ভারে কিছু জমা হয় না।",
- "form.work":"১ · কাজ বেছে নিন","form.search":"৩১৮টি অনুমোদিত কাজের মধ্যে খুঁজুন","form.search.ph":"যেমন: plantation, check dam, play ground…","form.search.hint":"কীওয়ার্ড বা কাজের নাম টাইপ করে তালিকা থেকে বেছে নিন।",
+ "form.work":"১ · কাজ বেছে নিন","form.sno":"কাজের ক্রমিক নং (১–৩১৮)","form.search":"…অথবা ৩১৮টি অনুমোদিত কাজের মধ্যে খুঁজুন","form.search.ph":"যেমন: plantation, check dam, play ground…","form.search.hint":"কীওয়ার্ড বা কাজের নাম টাইপ করে তালিকা থেকে বেছে নিন।",
  "form.loc":"২ · অবস্থান","form.district":"জেলা","form.block":"ব্লক","form.gp":"গ্রাম পঞ্চায়েত","form.sansad":"গ্রাম সংসদের নাম ও নম্বর",
  "form.work2":"৩ · কাজের বিবরণ","form.scheme":"প্রস্তাবিত কাজের নাম (স্কিম নাম)","form.scheme.hint":"কাজ ও অবস্থান থেকে স্বয়ংক্রিয়ভাবে তৈরি। প্রয়োজনে সম্পাদনা করুন।",
  "form.cost":"আনুমানিক খরচ (টাকা)","form.ratio":"মজুরি : সামগ্রী","form.fy":"অর্থবর্ষ","form.sector":"ওয়ার্ক সেক্টর",
@@ -669,7 +687,7 @@ var I18N={ bn:{
  "foot.disc":"VB-G RAM G / VBGRAMG এবং সংশ্লিষ্ট সরকারি নাম ভারত সরকার / রাজ্য সরকারের সম্পত্তি। এটি Vision Technologies and Robotics-এর একটি স্বাধীন টুল, কোনো সরকারি সংস্থার সাথে সম্পর্কিত বা অনুমোদিত নয়। তৈরি সার্টিফিকেটে অনুমোদিত আধিকারিকদের স্বাক্ষর ও সিল প্রয়োজন।"
 }, hi:{
  "hero.h1":"VB-G RAM G सर्टिफिकेट जनरेटर","hero.p":"काम चुनें, कुछ फ़ील्ड भरें, और सभी 8 सर्टिफिकेट PDF के रूप में डाउनलोड करें — पूरी तरह आपके ब्राउज़र में। कोई लॉगिन नहीं, किसी सर्वर पर कुछ संग्रहीत नहीं।",
- "form.work":"1 · काम चुनें","form.search":"318 अनुमेय कार्यों में खोजें","form.search.ph":"जैसे: plantation, check dam, play ground…","form.search.hint":"कीवर्ड या कार्य का नाम टाइप करके सूची से चुनें।",
+ "form.work":"1 · काम चुनें","form.sno":"कार्य क्रम संख्या (1–318)","form.search":"…या 318 अनुमेय कार्यों में खोजें","form.search.ph":"जैसे: plantation, check dam, play ground…","form.search.hint":"कीवर्ड या कार्य का नाम टाइप करके सूची से चुनें।",
  "form.loc":"2 · स्थान","form.district":"ज़िला","form.block":"ब्लॉक","form.gp":"ग्राम पंचायत","form.sansad":"ग्राम संसद का नाम व नंबर",
  "form.work2":"3 · कार्य विवरण","form.scheme":"प्रस्तावित कार्य का नाम (स्कीम नाम)","form.scheme.hint":"कार्य व स्थान से स्वतः तैयार। आवश्यकतानुसार संपादित करें।",
  "form.cost":"अनुमानित लागत (रु.)","form.ratio":"मज़दूरी : सामग्री","form.fy":"वित्तीय वर्ष","form.sector":"वर्क सेक्टर",

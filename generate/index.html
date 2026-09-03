@@ -102,6 +102,16 @@ details.adv .body{padding:.2rem .6rem .7rem}
 .cert .foot{margin-top:12px;border-top:1px solid #e3e7ef;padding-top:4px;text-align:center;font-size:8.5px;color:#8a93a3}
 .cert .na{color:#8a8a8a}
 .muted{color:var(--text-light);font-size:.8rem}
+.linklike{background:none;border:none;color:var(--primary);font-weight:700;font-size:.78rem;cursor:pointer;font-family:inherit;padding:0}
+.chkgroup{border:1px solid var(--border);border-radius:8px;margin:.5rem 0;overflow:hidden}
+.chkhead{background:var(--bg-alt);padding:.4rem .55rem;font-weight:700;font-size:.78rem}
+.chkhead .muted{font-weight:400}
+.chkitem{display:flex;align-items:center;gap:.5rem;padding:.32rem .55rem;border-top:1px solid var(--border)}
+.chkitem .cl{flex:1;font-size:.76rem;color:var(--text-light);line-height:1.25}
+.seg{display:inline-flex;border:1px solid var(--border);border-radius:6px;overflow:hidden;flex:0 0 auto}
+.seg button{border:none;background:var(--bg);color:var(--text-light);font-size:.72rem;font-weight:700;padding:.2rem .55rem;cursor:pointer;font-family:inherit}
+.seg button.on{background:var(--success);color:#fff}
+.seg button.on.no{background:var(--danger);color:#fff}
 footer{background:var(--navy);color:#cbd5e1;text-align:center;padding:1.6rem 0;font-size:.8rem}
 footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
 .discl{opacity:.7;max-width:680px;margin:.7rem auto 0;font-size:.72rem}
@@ -198,7 +208,11 @@ footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
       <div class="body">
         <div class="fld"><label data-i18n="form.outcome">Cert-1 · Expected Outcome / Productivity &amp; Durability</label><textarea id="f_outcome"></textarea></div>
         <div class="fld"><label data-i18n="form.utility">Cert-1 · Utility of the Work</label><textarea id="f_utility"></textarea></div>
-        <div class="muted" data-i18n="form.checklists">Compliance checklists are pre-set to sensible values; open the preview to review. (Advanced editing of each Yes/No is on the roadmap.)</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin:.3rem 0 .2rem">
+          <span class="muted" data-i18n="form.checklists">Set each compliance item to Yes / No.</span>
+          <button type="button" id="chkReset" class="linklike" data-i18n="form.chkreset">Reset to defaults</button>
+        </div>
+        <div id="checkEditor"></div>
       </div>
     </details>
 
@@ -246,12 +260,30 @@ var CERTIFY = {
   7:"As per verification report given by GP-level Engineers, it is certified that necessary consultation has been made with the converging Department and Clearance / NOC from that Department has been obtained for implementation of the proposed convergence work under the "+GAZ+".",
   8:"As per verification report given by GP-level Engineers, GRS & Supervisor, it is certified that all mandatory non-negotiable provisions prescribed under the "+GAZ+" have been complied with during planning and execution of the proposed work."
 };
-// checklists: [label, defaultValue]
-var CL1 = [["1. Worksite physically verified","YES"],["2. Land ownership verified","YES"],["3. Geo-coordinates collected","YES"],["4. Yuktdhara / GIS planning checked","YES"],["5. Remote Sensing / Land Use Land Cover data verified","YES"],["6. Watershed & drainage suitability verified","YES"],["7. Soil type and slope suitability verified","YES"],["8. Existing completed/ongoing works checked in VB-G RAM G Soft","YES"],["9. Accessibility of worksite verified","YES"],["10. Work permissible under VB-G RAM G work list","YES"],["11. Labour-material ratio maintained","YES"],["12. Community demand assessed through Gram Sabha","YES"],["13. Expected sustainability of asset assessed as per VB-G RAM G work list","YES"]];
-var CL2 = [["1. Yuktdhara / GIS Plan Map checked","YES"],["2. GP boundary verified","YES"],["3. Drawing type verified (Point/Line/Polygon)","YES"],["4. Completed works data checked in VB-G RAM G Soft","YES"],["5. Ongoing works data checked in VB-G RAM G Soft","YES"],["6. Worksite physically verified","YES"],["7. Similar project found at same location within last 5 years","NO"]];
-var CL3 = [["1. Yuktdhara / GIS Plan Map checked","YES"],["2. Worksite physically verified","YES"],["3. Any sub-work created or splitting of work done","NO"],["4. Any artificial splitting of estimate detected","NO"]];
-var CL5 = [["Beneficiary eligibility verified as per AMC 2024-25 (Ref.: AMC Page No. 41-42) and found eligible"],["SECC / Vulnerable household verification done and found eligible"],["Land ownership verified with data of BL&LRO Office and found correct"],["Gram Sabha approval obtained"]];
-var CL8 = [["No contractor engaged"],["No labour-displacing machinery used"],["Only registered Job Card holders employed"],["Equal wages paid to men and women"],["Work executed as per approved estimate"],["NMMS attendance maintained"],["Geo-tagging compliance ensured"]];
+// editable Yes/No checklists — labels + boolean defaults (true = Yes). cert8 renders "Yes/No"; others "YES/NO".
+var T=true,F=false;
+var CHECKS_META={
+  c1:{cert:1,title:"Certificate 1 · Feasibility Verification (13)",
+      labels:["1. Worksite physically verified","2. Land ownership verified","3. Geo-coordinates collected","4. Yuktdhara / GIS planning checked","5. Remote Sensing / Land Use Land Cover data verified","6. Watershed & drainage suitability verified","7. Soil type and slope suitability verified","8. Existing completed/ongoing works checked in VB-G RAM G Soft","9. Accessibility of worksite verified","10. Work permissible under VB-G RAM G work list","11. Labour-material ratio maintained","12. Community demand assessed through Gram Sabha","13. Expected sustainability of asset assessed as per VB-G RAM G work list"],
+      def:[T,T,T,T,T,T,T,T,T,T,T,T,T]},
+  c2:{cert:2,title:"Certificate 2 · Non-duplication (7)",
+      labels:["1. Yuktdhara / GIS Plan Map checked","2. GP boundary verified","3. Drawing type verified (Point/Line/Polygon)","4. Completed works data checked in VB-G RAM G Soft","5. Ongoing works data checked in VB-G RAM G Soft","6. Worksite physically verified","7. Similar project found at same location within last 5 years"],
+      def:[T,T,T,T,T,T,F]},
+  c3:{cert:3,title:"Certificate 3 · Non-splitting (4)",
+      labels:["1. Yuktdhara / GIS Plan Map checked","2. Worksite physically verified","3. Any sub-work created or splitting of work done","4. Any artificial splitting of estimate detected"],
+      def:[T,T,F,F]},
+  c5:{cert:5,title:"Certificate 5 · IBS eligibility (4)",ibs:true,
+      labels:["Beneficiary eligibility verified as per AMC 2024-25 (Ref.: AMC Page No. 41-42) and found eligible","SECC / Vulnerable household verification done and found eligible","Land ownership verified with data of BL&LRO Office and found correct","Gram Sabha approval obtained"],
+      def:[T,T,T,T]},
+  c6:{cert:6,title:"Certificate 6 · DPR (1)",
+      labels:["DPR prepared (as per format enclosed)"],def:[T]},
+  c8:{cert:8,title:"Certificate 8 · Non-negotiables (7)",lower:true,
+      labels:["No contractor engaged","No labour-displacing machinery used","Only registered Job Card holders employed","Equal wages paid to men and women","Work executed as per approved estimate","NMMS attendance maintained","Geo-tagging compliance ensured"],
+      def:[T,T,T,T,T,T,T]}
+};
+var CHECK={};
+function initChecks(){ CHECK={}; Object.keys(CHECKS_META).forEach(function(k){CHECK[k]=CHECKS_META[k].def.slice();}); }
+function yn(k,i){ var b=CHECK[k][i]; return CHECKS_META[k].lower?(b?"Yes":"No"):(b?"YES":"NO"); }
 
 /* ========================= state ========================= */
 var WORKS=[], DISTRICTS=[], selected=null;
@@ -276,7 +308,7 @@ Promise.all([
   fetch("wb-lgd.json").then(function(r){return r.json();})
 ]).then(function(res){
   WORKS=res[0]; DISTRICTS=(res[1]&&res[1].districts)||[];
-  initLocation(); prefillFromCookie(); wire(); updateDerived();
+  initChecks(); initLocation(); prefillFromCookie(); buildCheckEditor(); wire(); updateDerived();
 }).catch(function(e){ $("status").textContent="Could not load data: "+e; $("status").className="status err"; });
 
 /* ========================= location ========================= */
@@ -398,16 +430,16 @@ function buildCert(no,m){
   var c={no:no, header:HEADER, title:TITLES[no], basic:basic(no,m), sections:[], table:null, tableTitle:"", tableHead:null, certify:CERTIFY[no], date:m.date, sig:sig(m), note:""};
   if(no===1){
     c.tableTitle="A. Feasibility Verification"; c.tableHead=["Parameters","Verified (Yes/No)","Remarks"];
-    c.table=CL1.map(function(x){return [x[0],x[1],""];});
+    c.table=CHECKS_META.c1.labels.map(function(lab,i){return [lab, yn("c1",i), ""];});
     c.sections=[
       {title:"B. Expected Outcome / Productivity & Durability of Work", body:m.outcome, narr:true},
       {title:"C. Utility of the Work", body:m.utility, narr:true}
     ];
-  } else if(no===2){ c.tableTitle="VERIFICATION ON NON-DUPLICATION OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CL2.map(function(x){return [x[0],x[1],""];}); }
-  else if(no===3){ c.tableTitle="VERIFICATION ON NON-SPLITTING OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CL3.map(function(x){return [x[0],x[1],""];}); }
+  } else if(no===2){ c.tableTitle="VERIFICATION ON NON-DUPLICATION OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CHECKS_META.c2.labels.map(function(lab,i){return [lab, yn("c2",i), ""];}); }
+  else if(no===3){ c.tableTitle="VERIFICATION ON NON-SPLITTING OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CHECKS_META.c3.labels.map(function(lab,i){return [lab, yn("c3",i), ""];}); }
   else if(no===4){ c.tableTitle="VERIFICATION:"; c.tableHead=["Sl. No.","Master Category","Sub Category","Permissible Work Description"]; c.table=[[String(m.sno),m.cat,m.sub,m.permissible]]; }
-  else if(no===5){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)"]; c.table=CL5.map(function(x){return [x[0], m.ibs?"YES":"NA"];}); if(!m.ibs)c.note="Not an Individual Beneficiary Scheme (IBS) work — Not Applicable."; }
-  else if(no===6){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)","Remarks"]; c.table=[["DPR prepared (as per format enclosed)","YES",""]]; }
+  else if(no===5){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)"]; c.table=CHECKS_META.c5.labels.map(function(lab,i){return [lab, m.ibs?yn("c5",i):"NA"];}); if(!m.ibs)c.note="Not an Individual Beneficiary Scheme (IBS) work — Not Applicable."; }
+  else if(no===6){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)","Remarks"]; c.table=[[CHECKS_META.c6.labels[0], yn("c6",0), ""]]; }
   else if(no===7){
     c.tableTitle="CONVERGENCE-RELATED DETAILS:"; c.tableHead=["Criteria","Details"];
     if(m.conv){ c.table=[
@@ -421,7 +453,7 @@ function buildCert(no,m){
       ["Memo No. & Date of the converging department",m.convMemo]
     ];} else { c.table=[["Convergence component","NA"]]; c.note="This work has no convergence component — Not Applicable."; }
   }
-  else if(no===8){ c.tableTitle="INFORMATION ON ADHERENCE TO NON-NEGOTIABLE CONDITIONS:"; c.tableHead=["Sl. No.","Non-Negotiable Condition","Compliance Status"]; c.table=CL8.map(function(x,i){return [String(i+1),x[0],"Yes"];}); }
+  else if(no===8){ c.tableTitle="INFORMATION ON ADHERENCE TO NON-NEGOTIABLE CONDITIONS:"; c.tableHead=["Sl. No.","Non-Negotiable Condition","Compliance Status"]; c.table=CHECKS_META.c8.labels.map(function(lab,i){return [String(i+1),lab, yn("c8",i)];}); }
   return c;
 }
 function buildAll(m){var a=[];for(var i=1;i<=8;i++)a.push(buildCert(i,m));return a;}
@@ -448,6 +480,25 @@ function render(){
   var box=$("preview");
   if(!selected){ box.innerHTML='<p class="muted">'+(document.querySelector('[data-i18n="prev.empty"]')?tr("prev.empty"):"Choose a work to preview the certificates.")+'</p>'; return; }
   var m=model(); box.innerHTML=buildAll(m).map(certHTML).join("");
+}
+
+/* ========================= checklist editor ========================= */
+function buildCheckEditor(){
+  var box=$("checkEditor"); if(!box) return;
+  var order=["c1","c2","c3","c5","c6","c8"];
+  box.innerHTML=order.map(function(k){
+    var meta=CHECKS_META[k];
+    var items=meta.labels.map(function(lab,i){
+      var v=CHECK[k][i];
+      return '<div class="chkitem"><span class="cl">'+esc(lab)+'</span>'+
+             '<span class="seg" data-k="'+k+'" data-i="'+i+'">'+
+             '<button type="button" class="'+(v?'on':'')+'" data-v="1">Yes</button>'+
+             '<button type="button" class="'+(v?'':'on no')+'" data-v="0">No</button>'+
+             '</span></div>';
+    }).join("");
+    var note=meta.ibs?' <span class="muted">(applies only if Individual Beneficiary is ON)</span>':'';
+    return '<div class="chkgroup"><div class="chkhead">'+esc(meta.title)+note+'</div>'+items+'</div>';
+  }).join("");
 }
 
 /* ========================= PDF generation ========================= */
@@ -591,6 +642,15 @@ function wire(){
     var el=$(id); if(!el)return; el.addEventListener("input",render); el.addEventListener("change",render);
   });
   $("f_gp").addEventListener("change",function(){ if(selected){ /* refresh auto-draft anchors if blank */ } });
+  $("checkEditor").addEventListener("click",function(e){
+    var b=e.target.closest(".seg button"); if(!b)return;
+    var seg=b.parentNode, k=seg.getAttribute("data-k"), i=+seg.getAttribute("data-i");
+    CHECK[k][i]=(b.getAttribute("data-v")==="1");
+    seg.querySelector('[data-v="1"]').className=CHECK[k][i]?"on":"";
+    seg.querySelector('[data-v="0"]').className=CHECK[k][i]?"":"on no";
+    render();
+  });
+  $("chkReset").addEventListener("click",function(){ initChecks(); buildCheckEditor(); render(); });
   $("genBtn").addEventListener("click",generate);
 }
 
@@ -603,7 +663,7 @@ var I18N={ bn:{
  "form.cost":"আনুমানিক খরচ (টাকা)","form.ratio":"মজুরি : সামগ্রী","form.fy":"অর্থবর্ষ","form.sector":"ওয়ার্ক সেক্টর",
  "form.ibs":"ব্যক্তিগত উপভোক্তা (IBS) — ঐচ্ছিক","form.ibs.on":"এটি একটি ব্যক্তিগত/গোষ্ঠী উপভোক্তা কাজ","form.ben.name":"উপভোক্তার নাম","form.ben.jc":"জব কার্ড নম্বর","form.ben.cat":"উপভোক্তার শ্রেণি",
  "form.conv":"কনভারজেন্স — ঐচ্ছিক","form.conv.on":"এই কাজে কনভারজেন্স আছে","form.conv.dept":"কনভারজিং দপ্তর ও স্কিম","form.conv.share":"VB-G RAM G অংশ (টাকা)","form.conv.deptshare":"দপ্তরের অংশ (টাকা)","form.conv.cat":"কনভারজেন্স ধরন","form.conv.noc":"NOC পাওয়া গেছে?","form.conv.tech":"টেকনিক্যাল হলে — প্রদত্ত জ্ঞান","form.conv.memo":"NOC মেমো নম্বর ও তারিখ",
- "form.narr":"বিবরণ ও চেকলিস্ট — স্বয়ংক্রিয়, সম্পাদনাযোগ্য","form.outcome":"সার্টিফিকেট-১ · প্রত্যাশিত ফল/উৎপাদনশীলতা ও স্থায়িত্ব","form.utility":"সার্টিফিকেট-১ · কাজের উপযোগিতা","form.checklists":"কমপ্লায়েন্স চেকলিস্ট যুক্তিসঙ্গত মানে পূর্বনির্ধারিত; প্রিভিউতে দেখুন।",
+ "form.narr":"বিবরণ ও চেকলিস্ট — স্বয়ংক্রিয়, সম্পাদনাযোগ্য","form.outcome":"সার্টিফিকেট-১ · প্রত্যাশিত ফল/উৎপাদনশীলতা ও স্থায়িত্ব","form.utility":"সার্টিফিকেট-১ · কাজের উপযোগিতা","form.checklists":"প্রতিটি কমপ্লায়েন্স আইটেম Yes / No সেট করুন।","form.chkreset":"ডিফল্টে রিসেট",
  "form.generate":"৮টি সার্টিফিকেট তৈরি করুন (ZIP)","form.status.ready":"শুরু করতে একটি কাজ বেছে নিন। আপনার অবস্থান শুধু এই ডিভাইসে মনে রাখা হয়।",
  "prev.empty":"আপনি ফর্ম পূরণ করলে এখানে ৮টি সার্টিফিকেট প্রিভিউ হবে।","foot.uploader":"সার্টিফিকেট আপলোডার","foot.repo":"GitHub",
  "foot.disc":"VB-G RAM G / VBGRAMG এবং সংশ্লিষ্ট সরকারি নাম ভারত সরকার / রাজ্য সরকারের সম্পত্তি। এটি Vision Technologies and Robotics-এর একটি স্বাধীন টুল, কোনো সরকারি সংস্থার সাথে সম্পর্কিত বা অনুমোদিত নয়। তৈরি সার্টিফিকেটে অনুমোদিত আধিকারিকদের স্বাক্ষর ও সিল প্রয়োজন।"
@@ -615,7 +675,7 @@ var I18N={ bn:{
  "form.cost":"अनुमानित लागत (रु.)","form.ratio":"मज़दूरी : सामग्री","form.fy":"वित्तीय वर्ष","form.sector":"वर्क सेक्टर",
  "form.ibs":"व्यक्तिगत लाभार्थी (IBS) — वैकल्पिक","form.ibs.on":"यह एक व्यक्तिगत/समूह लाभार्थी कार्य है","form.ben.name":"लाभार्थी का नाम","form.ben.jc":"जॉब कार्ड नंबर","form.ben.cat":"लाभार्थी श्रेणी",
  "form.conv":"कन्वर्जेंस — वैकल्पिक","form.conv.on":"इस कार्य में कन्वर्जेंस है","form.conv.dept":"कन्वर्जिंग विभाग व स्कीम","form.conv.share":"VB-G RAM G हिस्सा (रु.)","form.conv.deptshare":"विभागीय हिस्सा (रु.)","form.conv.cat":"कन्वर्जेंस प्रकार","form.conv.noc":"NOC प्राप्त?","form.conv.tech":"तकनीकी होने पर — प्रदत्त ज्ञान","form.conv.memo":"NOC मेमो नंबर व तारीख",
- "form.narr":"विवरण व चेकलिस्ट — स्वतः, संपादन योग्य","form.outcome":"सर्टिफिकेट-1 · अपेक्षित परिणाम/उत्पादकता व टिकाऊपन","form.utility":"सर्टिफिकेट-1 · कार्य की उपयोगिता","form.checklists":"अनुपालन चेकलिस्ट उचित मानों पर पूर्व-निर्धारित; प्रीव्यू में देखें।",
+ "form.narr":"विवरण व चेकलिस्ट — स्वतः, संपादन योग्य","form.outcome":"सर्टिफिकेट-1 · अपेक्षित परिणाम/उत्पादकता व टिकाऊपन","form.utility":"सर्टिफिकेट-1 · कार्य की उपयोगिता","form.checklists":"प्रत्येक अनुपालन आइटम Yes / No सेट करें।","form.chkreset":"डिफ़ॉल्ट पर रीसेट",
  "form.generate":"8 सर्टिफिकेट बनाएँ (ZIP)","form.status.ready":"शुरू करने के लिए एक कार्य चुनें। आपका स्थान केवल इसी डिवाइस पर याद रखा जाता है।",
  "prev.empty":"फ़ॉर्म भरते ही यहाँ 8 सर्टिफिकेट प्रीव्यू होंगे।","foot.uploader":"सर्टिफिकेट अपलोडर","foot.repo":"GitHub",
  "foot.disc":"VB-G RAM G / VBGRAMG और संबंधित सरकारी नाम भारत सरकार / राज्य सरकार की संपत्ति हैं। यह Vision Technologies and Robotics का एक स्वतंत्र टूल है, किसी सरकारी निकाय से संबद्ध या अनुमोदित नहीं। तैयार सर्टिफिकेट पर अधिकृत अधिकारियों के हस्ताक्षर व मुहर आवश्यक हैं।"

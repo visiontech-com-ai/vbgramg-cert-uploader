@@ -700,6 +700,12 @@ function zipStore(files){
 }
 function download(blob,name){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);}
 
+// save the chosen location immediately (persists across sessions on this device)
+function saveLoc(){
+  var c=getCookie();
+  c.district=locVal("district"); c.blockLast=locVal("block"); c.gpLast=locVal("gp"); c.sansadLast=$("f_sansad").value.trim();
+  setCookie(c);
+}
 function persistLoc(m){
   var c=getCookie();
   c.district=m.district; c.blockLast=m.block; c.gpLast=m.gp; c.sansadLast=m.sansad;
@@ -758,9 +764,11 @@ function wire(){
     var el=$(id); if(!el)return; el.addEventListener("input",render); el.addEventListener("change",render);
   });
   // cascading District -> Block -> GP (with "Other — type" fallback)
-  $("f_district").addEventListener("change",function(){ onDistrictChange(); render(); });
-  $("f_block").addEventListener("change",function(){ toggleOther("block"); onBlockChange(); render(); });
-  $("f_gp").addEventListener("change",render);
+  $("f_district").addEventListener("change",function(){ onDistrictChange(); saveLoc(); render(); });
+  $("f_block").addEventListener("change",function(){ toggleOther("block"); onBlockChange(); saveLoc(); render(); });
+  $("f_gp").addEventListener("change",function(){ saveLoc(); render(); });
+  $("f_block_other").addEventListener("input",function(){ saveLoc(); render(); });
+  $("f_sansad").addEventListener("input",saveLoc);
   $("checkEditor").addEventListener("click",function(e){
     var b=e.target.closest(".seg button"); if(!b)return;
     var seg=b.parentNode, k=seg.getAttribute("data-k"), i=+seg.getAttribute("data-i");
@@ -827,9 +835,9 @@ function tr(key){ var d=I18N[curLang]; return d&&d[key]!==undefined?d[key]:null;
     for(var i=0;i<els.length;i++){var k=els[i].getAttribute("data-i18n");els[i].innerHTML=(d&&d[k]!==undefined)?d[k]:els[i].getAttribute("data-en");}
     for(var j=0;j<phs.length;j++){var k2=phs[j].getAttribute("data-i18n-ph");phs[j].setAttribute("placeholder",(d&&d[k2]!==undefined)?d[k2]:phs[j].getAttribute("data-en-ph"));}
     document.documentElement.lang=lang; var s=document.getElementById("langSelect"); if(s)s.value=lang;
-    try{localStorage.setItem("vbgramg_lang",lang);}catch(e){}
+    try{localStorage.setItem("vbgramg_gen_lang",lang);}catch(e){}
   };
-  var saved="bn"; try{saved=localStorage.getItem("vbgramg_lang")||"bn";}catch(e){}
+  var saved="en"; try{saved=localStorage.getItem("vbgramg_gen_lang")||"en";}catch(e){}
   window.setLang(saved);
   var sel=document.getElementById("langSelect"); if(sel)sel.addEventListener("change",function(){window.setLang(this.value);});
 })();

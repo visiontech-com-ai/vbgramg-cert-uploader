@@ -100,7 +100,7 @@ details.adv .body{padding:.2rem .6rem .7rem}
 .cert .cert-para{margin:6px 0;text-align:justify}
 .cert .narr{white-space:pre-wrap}
 .cert .sig{display:flex;justify-content:space-between;gap:8px;margin-top:22px}
-.cert .sig div{flex:1;text-align:center;font-size:10.5px}
+.cert .sig div{flex:1;text-align:center;font-size:10.5px;font-weight:700}
 .cert .sig .sg{border-top:1px solid #333;padding-top:3px;margin-top:26px}
 .cert .foot{margin-top:12px;border-top:1px solid #e3e7ef;padding-top:4px;text-align:center;font-size:8.5px;color:#8a93a3}
 .cert .na{color:#8a8a8a}
@@ -305,6 +305,7 @@ var CHECKS_META={
 var CHECK={};
 function initChecks(){ CHECK={}; Object.keys(CHECKS_META).forEach(function(k){CHECK[k]=CHECKS_META[k].def.slice();}); }
 function yn(k,i){ var b=CHECK[k][i]; return CHECKS_META[k].lower?(b?"Yes":"No"):(b?"YES":"NO"); }
+function ynCell(v){ return {t:v, b:true, c:true}; }   // Yes/No status cell: centered + bold
 
 /* ========================= state ========================= */
 var WORKS=[], DISTRICTS=[], selected=null;
@@ -467,16 +468,16 @@ function buildCert(no,m){
   var c={no:no, header:HEADER, title:TITLES[no], basic:basic(no,m), sections:[], table:null, tableTitle:"", tableHead:null, certify:CERTIFY[no], date:m.date, sig:sig(m), note:""};
   if(no===1){
     c.tableTitle="A. Feasibility Verification"; c.tableHead=["Parameters","Verified (Yes/No)","Remarks"];
-    c.table=CHECKS_META.c1.labels.map(function(lab,i){return [lab, yn("c1",i), ""];});
+    c.table=CHECKS_META.c1.labels.map(function(lab,i){return [lab, ynCell(yn("c1",i)), ""];});
     c.sections=[
       {title:"B. Expected Outcome / Productivity & Durability of Work", body:m.outcome, narr:true},
       {title:"C. Utility of the Work", body:m.utility, narr:true}
     ];
-  } else if(no===2){ c.tableTitle="VERIFICATION ON NON-DUPLICATION OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CHECKS_META.c2.labels.map(function(lab,i){return [lab, yn("c2",i), ""];}); }
-  else if(no===3){ c.tableTitle="VERIFICATION ON NON-SPLITTING OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CHECKS_META.c3.labels.map(function(lab,i){return [lab, yn("c3",i), ""];}); }
+  } else if(no===2){ c.tableTitle="VERIFICATION ON NON-DUPLICATION OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CHECKS_META.c2.labels.map(function(lab,i){return [lab, ynCell(yn("c2",i)), ""];}); }
+  else if(no===3){ c.tableTitle="VERIFICATION ON NON-SPLITTING OF WORK:"; c.tableHead=["Parameters of verification","Status (Yes/No)","Remarks"]; c.table=CHECKS_META.c3.labels.map(function(lab,i){return [lab, ynCell(yn("c3",i)), ""];}); }
   else if(no===4){ c.tableTitle="VERIFICATION:"; c.tableHead=["Sl. No.","Master Category","Sub Category","Permissible Work Description"]; c.table=[[String(m.sno),m.cat,m.sub,m.permissible]]; }
-  else if(no===5){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)"]; c.table=CHECKS_META.c5.labels.map(function(lab,i){return [lab, m.ibs?yn("c5",i):"NA"];}); if(!m.ibs)c.note="Not an Individual Beneficiary Scheme (IBS) work — Not Applicable."; }
-  else if(no===6){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)","Remarks"]; c.table=[[CHECKS_META.c6.labels[0], yn("c6",0), ""]]; }
+  else if(no===5){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)"]; c.table=CHECKS_META.c5.labels.map(function(lab,i){return [lab, ynCell(m.ibs?yn("c5",i):"NA")];}); if(!m.ibs)c.note="Not an Individual Beneficiary Scheme (IBS) work — Not Applicable."; }
+  else if(no===6){ c.tableTitle="VERIFICATION:"; c.tableHead=["Criteria","Status (Yes/No)","Remarks"]; c.table=[[CHECKS_META.c6.labels[0], ynCell(yn("c6",0)), ""]]; }
   else if(no===7){
     c.tableTitle="CONVERGENCE-RELATED DETAILS:"; c.tableHead=["Criteria","Details"];
     if(m.conv){ c.table=[
@@ -490,7 +491,7 @@ function buildCert(no,m){
       ["Memo No. & Date of the converging department",m.convMemo]
     ];} else { c.table=[["Convergence component","NA"]]; c.note="This work has no convergence component — Not Applicable."; }
   }
-  else if(no===8){ c.tableTitle="INFORMATION ON ADHERENCE TO NON-NEGOTIABLE CONDITIONS:"; c.tableHead=["Sl. No.","Non-Negotiable Condition","Compliance Status"]; c.table=CHECKS_META.c8.labels.map(function(lab,i){return [String(i+1),lab, yn("c8",i)];}); }
+  else if(no===8){ c.tableTitle="INFORMATION ON ADHERENCE TO NON-NEGOTIABLE CONDITIONS:"; c.tableHead=["Sl. No.","Non-Negotiable Condition","Compliance Status"]; c.table=CHECKS_META.c8.labels.map(function(lab,i){return [String(i+1),lab, ynCell(yn("c8",i))];}); }
   return c;
 }
 function buildAll(m){var a=[];for(var i=1;i<=8;i++)a.push(buildCert(i,m));return a;}
@@ -503,12 +504,12 @@ function certHTML(c){
   if(c.tableTitle) h+='<div class="sec">'+esc(c.tableTitle)+'</div>';
   if(c.table){
     h+='<table><tr>'+c.tableHead.map(function(x){return '<th>'+esc(x)+'</th>';}).join("")+'</tr>';
-    h+=c.table.map(function(row){return '<tr>'+row.map(function(cell,i){var w=(c.tableHead.length===3&&i===0)?' class="lbl"':'';return '<td'+w+'>'+esc(cellText(cell))+'</td>';}).join("")+'</tr>';}).join("");
+    h+=c.table.map(function(row){return '<tr>'+row.map(function(cell,i){var cls=(c.tableHead.length===3&&i===0)?' class="lbl"':'';var st='';if(cell&&cell.c)st+='text-align:center;';if(cell&&cell.b)st+='font-weight:700;';return '<td'+cls+(st?(' style="'+st+'"'):'')+'>'+esc(cellText(cell))+'</td>';}).join("")+'</tr>';}).join("");
     h+='</table>';
   }
   (c.sections||[]).forEach(function(s){ h+='<div class="sec">'+esc(s.title)+'</div><div class="cert-para narr">'+esc(s.body)+'</div>'; });
   h+='<div class="sec">CERTIFICATION:</div><div class="cert-para">'+esc(c.certify)+'</div>';
-  h+='<div class="cert-para">'+esc(c.date)+'</div>';
+  h+='<div class="cert-para" style="font-weight:700">'+esc(c.date)+'</div>';
   if(c.sig && c.sig.length) h+='<div class="sig">'+c.sig.map(function(s){return '<div><div class="sg">Signature & Seal</div>'+esc(s)+'</div>';}).join("")+'</div>';
   h+='<div class="foot">'+esc(GEN_TEXT)+'</div></div>';
   return h;
@@ -551,7 +552,7 @@ function drawCert(doc,c,m,S){
   var y=MT;
   function space(hh){ if(y+hh>PH-MBF){ doc.addPage(); y=MT; } }
   function center(t,size,bold){ doc.setFont("helvetica",bold?"bold":"normal");doc.setFontSize(size*S);var L=doc.splitTextToSize(t,CW);L.forEach(function(ln){var lh=size*S*0.42+1.0*S;space(lh);doc.text(ln,PW/2,y,{align:"center"});y+=lh;}); }
-  function para(t,size){ doc.setFont("helvetica","normal");doc.setFontSize(size*S);var L=doc.splitTextToSize(t,CW);L.forEach(function(ln){var lh=size*S*0.42+1.0*S;space(lh);doc.text(ln,ML,y);y+=lh;}); }
+  function para(t,size,bold){ doc.setFont("helvetica",bold?"bold":"normal");doc.setFontSize(size*S);var L=doc.splitTextToSize(t,CW);L.forEach(function(ln){var lh=size*S*0.42+1.0*S;space(lh);doc.text(ln,ML,y);y+=lh;}); }
   function secTitle(t){ y+=4.8*S;space(8*S);doc.setFont("helvetica","bold");doc.setFontSize(9.5*S);doc.text(t,ML,y);y+=3.6*S; }
   function table(head,rows,colW){
     var lh=3.9*S, pad=2.4*S; doc.setFontSize(9*S);
@@ -569,7 +570,8 @@ function drawCert(doc,c,m,S){
         doc.setFont(meta[i].inr?"INR":"helvetica", meta[i].bold?"bold":"normal");
         var ch=meta[i].lines.length*lh;
         var ty=y+(rh-ch)/2+lh-1.1;               // vertically centered block
-        meta[i].lines.forEach(function(ln){doc.text(ln,x+1.4,ty);ty+=lh;});
+        var cc=cells[i]&&cells[i].c, tx=cc?(x+colW[i]/2):(x+1.4);
+        meta[i].lines.forEach(function(ln){ if(cc)doc.text(ln,tx,ty,{align:"center"}); else doc.text(ln,tx,ty); ty+=lh; });
         x+=colW[i];
       }
       y+=rh;
@@ -592,12 +594,12 @@ function drawCert(doc,c,m,S){
   }
   (c.sections||[]).forEach(function(s){ secTitle(s.title); para(s.body,9); });
   secTitle("CERTIFICATION:"); para(c.certify,9);
-  y+=1.2*S; para(c.date,9);
-  // signatories (only the enabled panels)
+  y+=1.2*S; para(c.date,9,true);
+  // signatories (only the enabled panels) — rendered bold
   var N=(c.sig&&c.sig.length)||0;
   if(N){
   y+=13*S; space(18*S);
-  var sw=CW/N; doc.setFontSize(8.2*S);doc.setFont("helvetica","normal");
+  var sw=CW/N; doc.setFontSize(8.2*S);doc.setFont("helvetica","bold");
   for(var i=0;i<N;i++){
     var cx=ML+sw*i+sw/2;
     doc.text("Signature & Seal",cx,y,{align:"center"});

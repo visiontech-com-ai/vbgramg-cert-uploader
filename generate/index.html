@@ -161,8 +161,7 @@ footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
         <select id="f_block"></select>
         <input id="f_block_other" placeholder="Type block name" style="display:none;margin-top:.3rem" autocomplete="off"></div>
       <div class="fld"><label data-i18n="form.gp">Gram Panchayat</label>
-        <select id="f_gp"></select>
-        <input id="f_gp_other" placeholder="Type GP name" style="display:none;margin-top:.3rem" autocomplete="off"></div>
+        <select id="f_gp"></select></div>
     </div>
     <div class="fld"><label data-i18n="form.sansad">Name &amp; No. of Gram Sansad</label>
       <input id="f_sansad" autocomplete="off" placeholder="e.g. NAIPUKUR PAR - IX"></div>
@@ -351,7 +350,7 @@ function locVal(kind){ var s=$("f_"+kind); if(!s) return ""; if(s.value==="__OTH
 function initLocation(){
   fillSelect($("f_district"), Object.keys(TREE).sort(), "Select district…", false);
   fillSelect($("f_block"), [], "Select block…", true);
-  fillSelect($("f_gp"), [], "Select gram panchayat…", true);
+  fillSelect($("f_gp"), [], "Select gram panchayat…", false);
 }
 function onDistrictChange(keepBlock,keepGp){
   var d=$("f_district").value;
@@ -361,9 +360,8 @@ function onDistrictChange(keepBlock,keepGp){
 }
 function onBlockChange(keepGp){
   var d=$("f_district").value, b=locVal("block");
-  fillSelect($("f_gp"), gpsFor(d,b), "Select gram panchayat…", true);
-  if(keepGp){ if(gpsFor(d,b).indexOf(keepGp)>=0) $("f_gp").value=keepGp; else { $("f_gp").value="__OTHER__"; $("f_gp_other").value=keepGp; } }
-  toggleOther("gp");
+  fillSelect($("f_gp"), gpsFor(d,b), "Select gram panchayat…", false);
+  if(keepGp && gpsFor(d,b).indexOf(keepGp)>=0) $("f_gp").value=keepGp;
 }
 function prefillFromCookie(){
   var c=getCookie();
@@ -756,13 +754,13 @@ function wire(){
     else if(e.key==="ArrowUp"){e.preventDefault();if(idx>0){items[idx].classList.remove("active");items[idx-1].classList.add("active");items[idx-1].scrollIntoView({block:"nearest"});}}
     else if(e.key==="Enter"){var a=box.querySelector(".active");if(a){e.preventDefault();var w=WORKS.filter(function(x){return x.sno==a.getAttribute("data-sno");})[0];if(w)chooseWork(w);}}
   });
-  ["f_scheme","f_cost","f_ratio","f_fy","f_sector","f_sansad","f_block_other","f_gp_other","f_outcome","f_utility","f_ibs_on","f_ben_name","f_ben_jc","f_ben_cat","f_conv_on","f_conv_dept","f_conv_share","f_conv_deptshare","f_conv_cat","f_conv_noc","f_conv_tech","f_conv_memo","f_sig1","f_sig2","f_sig3","f_sig1_on","f_sig2_on","f_sig3_on"].forEach(function(id){
+  ["f_scheme","f_cost","f_ratio","f_fy","f_sector","f_sansad","f_block_other","f_outcome","f_utility","f_ibs_on","f_ben_name","f_ben_jc","f_ben_cat","f_conv_on","f_conv_dept","f_conv_share","f_conv_deptshare","f_conv_cat","f_conv_noc","f_conv_tech","f_conv_memo","f_sig1","f_sig2","f_sig3","f_sig1_on","f_sig2_on","f_sig3_on"].forEach(function(id){
     var el=$(id); if(!el)return; el.addEventListener("input",render); el.addEventListener("change",render);
   });
   // cascading District -> Block -> GP (with "Other — type" fallback)
   $("f_district").addEventListener("change",function(){ onDistrictChange(); render(); });
   $("f_block").addEventListener("change",function(){ toggleOther("block"); onBlockChange(); render(); });
-  $("f_gp").addEventListener("change",function(){ toggleOther("gp"); render(); });
+  $("f_gp").addEventListener("change",render);
   $("checkEditor").addEventListener("click",function(e){
     var b=e.target.closest(".seg button"); if(!b)return;
     var seg=b.parentNode, k=seg.getAttribute("data-k"), i=+seg.getAttribute("data-i");

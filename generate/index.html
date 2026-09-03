@@ -82,6 +82,8 @@ details.adv .body{padding:.2rem .6rem .7rem}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.8rem;border:none;border-radius:10px;font-size:1rem;font-weight:800;cursor:pointer;background:var(--accent);color:#111827;box-shadow:0 8px 18px rgba(245,158,11,.3)}
 .btn:hover{filter:brightness(1.05)}
 .btn:disabled{opacity:.5;cursor:not-allowed;filter:none}
+.btn2{display:inline-flex;align-items:center;justify-content:center;gap:.5rem;width:100%;padding:.65rem;border:1px solid var(--primary);border-radius:10px;font-size:.92rem;font-weight:700;cursor:pointer;background:transparent;color:var(--primary);margin-top:.5rem}
+.btn2:hover{background:var(--bg-alt)}
 .status{margin-top:.6rem;font-size:.82rem;padding:.5rem .6rem;border-radius:8px;background:var(--bg-alt);min-height:1rem}
 .status.ok{background:#e6f4ea;color:#137333}.status.err{background:#fdeaea;color:#b3261e}
 /* preview */
@@ -222,6 +224,7 @@ footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
     </details>
 
     <button class="btn" id="genBtn" data-i18n="form.generate">Generate 8 certificates (ZIP)</button>
+    <button class="btn2" id="genCombined" data-i18n="form.combined">Print / Save combined PDF (all 8)</button>
     <div class="status" id="status" data-i18n="form.status.ready">Choose a work to begin. Your location is remembered on this device only.</div>
   </div>
 
@@ -567,21 +570,30 @@ function drawCert(doc,c,m,S){
   return y;
 }
 
-function certPDF(c,m){
-  // pick the largest scale that keeps the certificate on ONE A4 page
-  var scales=[1,0.95,0.9,0.85,0.8,0.75,0.7,0.66,0.62,0.58], S=scales[scales.length-1];
-  for(var i=0;i<scales.length;i++){
-    var md=new jspdf.jsPDF({unit:"mm",format:"a4"}); regFont(md);
-    drawCert(md,c,m,scales[i]);
-    if(md.getNumberOfPages()===1){ S=scales[i]; break; }
-  }
-  var doc=newDoc(); regFont(doc);
-  doc.setProperties({title:"VBGRAMG Certificate "+c.no+" - "+(m.permissible||""),subject:"VB-G RAM G work certificate",author:"Vision Technologies and Robotics",keywords:"VBGRAMG, VB-G RAM G, MGNREGA, certificate, "+m.gp,creator:GEN_TEXT});
-  drawCert(doc,c,m,S);
-  // small, muted footer on every page
+// largest scale that keeps a certificate on ONE A4 page
+function measureScale(c,m){
+  var scales=[1,0.95,0.9,0.85,0.8,0.75,0.7,0.66,0.62,0.58];
+  for(var i=0;i<scales.length;i++){ var md=new jspdf.jsPDF({unit:"mm",format:"a4"}); regFont(md); drawCert(md,c,m,scales[i]); if(md.getNumberOfPages()===1) return scales[i]; }
+  return scales[scales.length-1];
+}
+function footerAll(doc){
   var pages=doc.getNumberOfPages();
   for(var p=1;p<=pages;p++){ doc.setPage(p);doc.setDrawColor(235);doc.line(ML,PH-8.5,PW-MR,PH-8.5);doc.setFont("helvetica","normal");doc.setFontSize(5.5);doc.setTextColor(180);doc.text(GEN_TEXT,PW/2,PH-5.5,{align:"center"});doc.setTextColor(0); }
+}
+function certPDF(c,m){
+  var doc=newDoc(); regFont(doc);
+  doc.setProperties({title:"VBGRAMG Certificate "+c.no+" - "+(m.permissible||""),subject:"VB-G RAM G work certificate",author:"Vision Technologies and Robotics",keywords:"VBGRAMG, VB-G RAM G, MGNREGA, certificate, "+m.gp,creator:GEN_TEXT});
+  drawCert(doc,c,m,measureScale(c,m));
+  footerAll(doc);
   return new Uint8Array(doc.output("arraybuffer"));
+}
+// one combined document, all 8 certificates (one A4 page each)
+function combinedDoc(m){
+  var certs=buildAll(m); var doc=newDoc(); regFont(doc);
+  doc.setProperties({title:"VBGRAMG Certificates 1-8 - "+(m.permissible||""),subject:"VB-G RAM G work certificates",author:"Vision Technologies and Robotics",keywords:"VBGRAMG, VB-G RAM G, MGNREGA, certificates, "+m.gp,creator:GEN_TEXT});
+  for(var i=0;i<8;i++){ if(i>0) doc.addPage(); drawCert(doc,certs[i],m,measureScale(certs[i],m)); }
+  footerAll(doc);
+  return doc;
 }
 
 /* ===== minimal store-only ZIP (no deps) ===== */
@@ -608,17 +620,21 @@ function zipStore(files){
 }
 function download(blob,name){var a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();setTimeout(function(){URL.revokeObjectURL(a.href);a.remove();},1500);}
 
-function generate(){
-  if(!selected){ setStatus(tr("form.status.needwork")||"Please choose a work first.","err"); return; }
-  var m=model();
-  if(!m.gp||!m.block||!m.district){ setStatus(tr("form.status.needloc")||"Please fill District, Block and Gram Panchayat.","err"); return; }
-  setStatus(tr("form.status.gen")||"Generating certificates…","");
-  // persist convenience fields (client-side only)
+function persistLoc(m){
   var c=getCookie();
   c.district=m.district; c.blockLast=m.block; c.gpLast=m.gp; c.sansadLast=m.sansad;
   c.block=[m.block].concat((c.block||[]).filter(function(x){return x!==m.block;})).slice(0,12);
   c.gp=[m.gp].concat((c.gp||[]).filter(function(x){return x!==m.gp;})).slice(0,12);
   setCookie(c); fillList("dl_block",c.block); fillList("dl_gp",c.gp);
+}
+function ready(m){
+  if(!selected){ setStatus(tr("form.status.needwork")||"Please choose a work first.","err"); return false; }
+  if(!m.gp||!m.block||!m.district){ setStatus(tr("form.status.needloc")||"Please fill District, Block and Gram Panchayat.","err"); return false; }
+  return true;
+}
+function generate(){
+  var m=model(); if(!ready(m)) return;
+  setStatus(tr("form.status.gen")||"Generating certificates…",""); persistLoc(m);
   setTimeout(function(){
     try{
       var certs=buildAll(m), files=[];
@@ -627,6 +643,20 @@ function generate(){
       download(zip,"vision-vbgramg-certificates.zip");
       if(typeof gtag==="function") gtag("event","generate_certificates",{sno:m.sno,files:8});
       setStatus((tr("form.status.done")||"Done — downloaded")+" vision-vbgramg-certificates.zip ("+(zip.size/1024).toFixed(0)+" KB, 8 PDFs).","ok");
+    }catch(e){ setStatus("Error: "+e.message,"err"); }
+  },30);
+}
+function generateCombined(){
+  var m=model(); if(!ready(m)) return;
+  setStatus(tr("form.status.combining")||"Preparing combined PDF…",""); persistLoc(m);
+  setTimeout(function(){
+    try{
+      var doc=combinedDoc(m);
+      var blob=doc.output("blob"), url=URL.createObjectURL(blob);
+      var w=window.open(url,"_blank");
+      if(typeof gtag==="function") gtag("event","combined_pdf",{sno:m.sno});
+      if(!w){ download(blob,"vision-vbgramg-certificates-combined.pdf"); setStatus((tr("form.status.combdl")||"Downloaded the combined PDF (pop-up was blocked)."),"ok"); }
+      else { setStatus((tr("form.status.combopen")||"Opened the combined 8-page PDF in a new tab — use its Print or Save."),"ok"); setTimeout(function(){URL.revokeObjectURL(url);},60000); }
     }catch(e){ setStatus("Error: "+e.message,"err"); }
   },30);
 }
@@ -670,6 +700,7 @@ function wire(){
     el.addEventListener("focus",function(){ var s=this; setTimeout(function(){ try{s.select();}catch(e){} },0); });
   });
   $("genBtn").addEventListener("click",generate);
+  $("genCombined").addEventListener("click",generateCombined);
 }
 
 /* ========================= i18n (form UI only; certificates stay English) ========================= */
@@ -682,7 +713,7 @@ var I18N={ bn:{
  "form.ibs":"ব্যক্তিগত উপভোক্তা (IBS) — ঐচ্ছিক","form.ibs.on":"এটি একটি ব্যক্তিগত/গোষ্ঠী উপভোক্তা কাজ","form.ben.name":"উপভোক্তার নাম","form.ben.jc":"জব কার্ড নম্বর","form.ben.cat":"উপভোক্তার শ্রেণি",
  "form.conv":"কনভারজেন্স — ঐচ্ছিক","form.conv.on":"এই কাজে কনভারজেন্স আছে","form.conv.dept":"কনভারজিং দপ্তর ও স্কিম","form.conv.share":"VB-G RAM G অংশ (টাকা)","form.conv.deptshare":"দপ্তরের অংশ (টাকা)","form.conv.cat":"কনভারজেন্স ধরন","form.conv.noc":"NOC পাওয়া গেছে?","form.conv.tech":"টেকনিক্যাল হলে — প্রদত্ত জ্ঞান","form.conv.memo":"NOC মেমো নম্বর ও তারিখ",
  "form.narr":"বিবরণ ও চেকলিস্ট — স্বয়ংক্রিয়, সম্পাদনাযোগ্য","form.outcome":"সার্টিফিকেট-১ · প্রত্যাশিত ফল/উৎপাদনশীলতা ও স্থায়িত্ব","form.utility":"সার্টিফিকেট-১ · কাজের উপযোগিতা","form.checklists":"প্রতিটি কমপ্লায়েন্স আইটেম Yes / No সেট করুন।","form.chkreset":"ডিফল্টে রিসেট",
- "form.generate":"৮টি সার্টিফিকেট তৈরি করুন (ZIP)","form.status.ready":"শুরু করতে একটি কাজ বেছে নিন। আপনার অবস্থান শুধু এই ডিভাইসে মনে রাখা হয়।",
+ "form.generate":"৮টি সার্টিফিকেট তৈরি করুন (ZIP)","form.combined":"একসাথে PDF প্রিন্ট / সেভ করুন (৮টি)","form.status.ready":"শুরু করতে একটি কাজ বেছে নিন। আপনার অবস্থান শুধু এই ডিভাইসে মনে রাখা হয়।",
  "prev.empty":"আপনি ফর্ম পূরণ করলে এখানে ৮টি সার্টিফিকেট প্রিভিউ হবে।","foot.uploader":"সার্টিফিকেট আপলোডার","foot.repo":"GitHub",
  "foot.disc":"VB-G RAM G / VBGRAMG এবং সংশ্লিষ্ট সরকারি নাম ভারত সরকার / রাজ্য সরকারের সম্পত্তি। এটি Vision Technologies and Robotics-এর একটি স্বাধীন টুল, কোনো সরকারি সংস্থার সাথে সম্পর্কিত বা অনুমোদিত নয়। তৈরি সার্টিফিকেটে অনুমোদিত আধিকারিকদের স্বাক্ষর ও সিল প্রয়োজন।"
 }, hi:{
@@ -694,7 +725,7 @@ var I18N={ bn:{
  "form.ibs":"व्यक्तिगत लाभार्थी (IBS) — वैकल्पिक","form.ibs.on":"यह एक व्यक्तिगत/समूह लाभार्थी कार्य है","form.ben.name":"लाभार्थी का नाम","form.ben.jc":"जॉब कार्ड नंबर","form.ben.cat":"लाभार्थी श्रेणी",
  "form.conv":"कन्वर्जेंस — वैकल्पिक","form.conv.on":"इस कार्य में कन्वर्जेंस है","form.conv.dept":"कन्वर्जिंग विभाग व स्कीम","form.conv.share":"VB-G RAM G हिस्सा (रु.)","form.conv.deptshare":"विभागीय हिस्सा (रु.)","form.conv.cat":"कन्वर्जेंस प्रकार","form.conv.noc":"NOC प्राप्त?","form.conv.tech":"तकनीकी होने पर — प्रदत्त ज्ञान","form.conv.memo":"NOC मेमो नंबर व तारीख",
  "form.narr":"विवरण व चेकलिस्ट — स्वतः, संपादन योग्य","form.outcome":"सर्टिफिकेट-1 · अपेक्षित परिणाम/उत्पादकता व टिकाऊपन","form.utility":"सर्टिफिकेट-1 · कार्य की उपयोगिता","form.checklists":"प्रत्येक अनुपालन आइटम Yes / No सेट करें।","form.chkreset":"डिफ़ॉल्ट पर रीसेट",
- "form.generate":"8 सर्टिफिकेट बनाएँ (ZIP)","form.status.ready":"शुरू करने के लिए एक कार्य चुनें। आपका स्थान केवल इसी डिवाइस पर याद रखा जाता है।",
+ "form.generate":"8 सर्टिफिकेट बनाएँ (ZIP)","form.combined":"संयुक्त PDF प्रिंट / सेव करें (सभी 8)","form.status.ready":"शुरू करने के लिए एक कार्य चुनें। आपका स्थान केवल इसी डिवाइस पर याद रखा जाता है।",
  "prev.empty":"फ़ॉर्म भरते ही यहाँ 8 सर्टिफिकेट प्रीव्यू होंगे।","foot.uploader":"सर्टिफिकेट अपलोडर","foot.repo":"GitHub",
  "foot.disc":"VB-G RAM G / VBGRAMG और संबंधित सरकारी नाम भारत सरकार / राज्य सरकार की संपत्ति हैं। यह Vision Technologies and Robotics का एक स्वतंत्र टूल है, किसी सरकारी निकाय से संबद्ध या अनुमोदित नहीं। तैयार सर्टिफिकेट पर अधिकृत अधिकारियों के हस्ताक्षर व मुहर आवश्यक हैं।"
 }};

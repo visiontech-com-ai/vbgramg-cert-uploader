@@ -170,8 +170,8 @@ footer a{color:#93c5fd;text-decoration:none;margin:0 .5rem}
 
     <h2 data-i18n="form.work2">3 · Work details</h2>
     <div class="fld"><label data-i18n="form.scheme">Name of the Proposed Work (scheme name)</label>
-      <textarea id="f_scheme"></textarea>
-      <div class="hint" data-i18n="form.scheme.hint">Auto-drafted from the work + location. Edit as needed.</div></div>
+      <textarea id="f_scheme" maxlength="100"></textarea>
+      <div class="hint" style="display:flex;justify-content:space-between;gap:.5rem"><span data-i18n="form.scheme.hint">Auto-drafted from the work + location. Edit as needed.</span><span id="schemeCount">0 / 100</span></div></div>
     <div class="row2">
       <div class="fld"><label data-i18n="form.cost">Estimated Cost (Rs.)</label>
         <input id="f_cost" type="number" min="0" value="0"></div>
@@ -416,6 +416,7 @@ function chooseWork(w){
   autoDraft();
   updateDerived();
 }
+function updateSchemeCount(){ var el=$("f_scheme"), c=$("schemeCount"); if(!el||!c)return; if(el.value.length>100){ el.value=el.value.slice(0,100); } c.textContent=el.value.length+" / 100"; }
 function autoDraft(){
   if(!selected)return;
   var gp=locVal("gp"), theme=catTheme(selected.cat);
@@ -430,6 +431,7 @@ function autoDraft(){
   }
   // IBS auto-suggest for non-community
   if(selected.beneficiary!=="Community"){ $("f_ibs_on").checked=true; }
+  updateSchemeCount();
 }
 function catTheme(cat){
   if(/Water Security/.test(cat))return "water security and soil & moisture conservation";
@@ -790,6 +792,7 @@ function wire(){
   ["f_scheme","f_cost","f_ratio","f_fy","f_sector","f_sansad","f_block_other","f_outcome","f_utility","f_ibs_on","f_ben_name","f_ben_jc","f_ben_cat","f_conv_on","f_conv_dept","f_conv_share","f_conv_deptshare","f_conv_cat","f_conv_noc","f_conv_tech","f_conv_memo","f_sig1","f_sig2","f_sig3","f_sig1_on","f_sig2_on","f_sig3_on"].forEach(function(id){
     var el=$(id); if(!el)return; el.addEventListener("input",render); el.addEventListener("change",render);
   });
+  $("f_scheme").addEventListener("input",updateSchemeCount); updateSchemeCount();
   // cascading District -> Block -> GP (with "Other — type" fallback)
   $("f_district").addEventListener("change",function(){ onDistrictChange(); saveLoc(); render(); });
   $("f_block").addEventListener("change",function(){ toggleOther("block"); onBlockChange(); saveLoc(); render(); });

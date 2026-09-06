@@ -13,8 +13,8 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VB-G RAM G Certificate Auto-Fill — One-Click Work Entry Certificate Upload | Vision Technologies</title>
-    <meta name="description" content="Free Chrome & Edge add-on for the VB-G RAM G (VBGRAMG) Work Entry page. Fills all 8 certificate blocks and attaches every PDF in one click, and compresses oversized scans automatically. By Vision Technologies and Robotics.">
-    <meta name="keywords" content="vbgramg, vb-g ram g, vbgramg work entry, vbgramg certificate upload, vbgramg work entry certificate, mgnrega certificate upload, work entry permissible, vbgramg pdf upload, vbgramg chrome extension, vbgramg certificate auto fill, viksit bharat rozgar aajeevika, rural development work entry, dord.gov.in work entry, bulk certificate upload vbgramg">
+    <meta name="description" content="Free Chrome & Edge add-on for the VB-G RAM G (VBGRAMG) Work Entry page. Fills all 8 certificate blocks and attaches every PDF in one click, and compresses oversized scans automatically. Also exports any report to CSV/JSON, joins reports (e.g. add caste from the Application Register), and shows a caste-wise wage-list amount breakup. By Vision Technologies and Robotics.">
+    <meta name="keywords" content="vbgramg, vb-g ram g, vbgramg work entry, vbgramg certificate upload, vbgramg work entry certificate, mgnrega certificate upload, work entry permissible, vbgramg pdf upload, vbgramg chrome extension, vbgramg certificate auto fill, vbgramg wage list caste breakup, vbgramg muster roll excel, vbgramg report to csv, viksit bharat rozgar aajeevika, rural development work entry, dord.gov.in work entry, bulk certificate upload vbgramg">
     <meta name="author" content="Vision Technologies and Robotics">
     <meta name="robots" content="index, follow">
     <link rel="canonical" href="https://visiontech-com-ai.github.io/vbgramg-cert-uploader/">
@@ -41,7 +41,7 @@
         "description": "Chrome and Edge add-on that fills all 8 certificate blocks and attaches the PDFs on the VB-G RAM G (VBGRAMG) Work Entry page in one click, and compresses oversized scans to fit the server's size limit.",
         "applicationCategory": "BrowserApplication",
         "operatingSystem": "Windows, macOS, Linux (Google Chrome or Microsoft Edge)",
-        "softwareVersion": "1.0.0",
+        "softwareVersion": "1.5.6",
         "author": {
             "@type": "Organization",
             "name": "Vision Technologies and Robotics",
@@ -178,6 +178,7 @@
                 <span class="badge" data-i18n="badge.browser">Chrome &amp; Edge</span>
                 <span class="badge" data-i18n="badge.pdf">8 PDFs in one click</span>
                 <span class="badge" data-i18n="badge.compress">Auto-compress scans</span>
+                <span class="badge" data-i18n="badge.data">Data tools &amp; caste breakup</span>
                 <span class="badge" data-i18n="badge.free">100% Free</span>
             </div>
 
@@ -260,6 +261,18 @@
 
     <section class="block alt">
         <div class="container">
+            <h2 data-i18n="data.h2">Also included: data tools</h2>
+            <p class="lead" data-i18n="data.p">The same add-on adds a few data helpers for VB-G RAM G reports — all running inside your browser, nothing uploaded.</p>
+            <div class="cards">
+                <div class="card"><h3 data-i18n="dataA.h3">Reports → Excel / CSV</h3><p data-i18n="dataA.p">Pull the tables from any VB-G RAM G report (job cards, muster rolls, wage lists) into clean CSV or JSON — no copy-paste, and blank “group” cells filled in.</p></div>
+                <div class="card"><h3 data-i18n="dataB.h3">Join &amp; caste lookup</h3><p data-i18n="dataB.p">Link two reports on a common key — for example add each worker’s caste from the Registration Application Register. Saved joins re-run in one click.</p></div>
+                <div class="card"><h3 data-i18n="dataC.h3">Wage-list caste breakup</h3><p data-i18n="dataC.p">On any wage list, get the amount split by caste (Others / SC / ST) with a one-click Copy — checked against the wage-list total on the page.</p></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="block alt">
+        <div class="container">
             <h2 data-i18n="sysreq.h2">Requirements</h2>
             <ul class="req">
                 <li data-i18n="sysreq.browser"><strong>Browser:</strong> Google Chrome or Microsoft Edge (Windows, Mac or Linux).</li>
@@ -308,6 +321,11 @@
         "card2.h3":"PDF সংযুক্ত করে","card2.p":"একটি ফোল্ডার বাছুন; ফাইলের নামে থাকা ১–৮ নম্বর অনুসারে প্রতিটি PDF তার ব্লকে মিলে যায়। DPR ও Convergence স্বয়ংক্রিয়ভাবে Yes সেট হয়।",
         "card3.h3":"বড় স্ক্যান কমপ্রেস করে","card3.p":"~১ MB সার্ভার সীমার বেশি স্ক্যান আপনার নিজের কম্পিউটারেই ছোট করে তৈরি হয় যাতে আপলোড হয় — কোনো অনলাইন সার্ভিসে কিছু পাঠানো হয় না।",
         "card4.h3":"গোপনীয় ও অফলাইন","card4.p":"সবকিছু আপনার ব্রাউজারের ভিতরে চলে। আপনার তথ্য আপনার কম্পিউটারেই থাকে, কোথাও পাঠানো হয় না।",
+        "badge.data":"ডেটা টুলস ও কাস্ট ব্রেকআপ",
+        "data.h2":"সঙ্গে থাকা ডেটা টুলস","data.p":"একই অ্যাড-অনে VB-G RAM G রিপোর্টের জন্য কিছু ডেটা টুল — সব আপনার ব্রাউজারেই চলে, কিছু আপলোড হয় না।",
+        "dataA.h3":"রিপোর্ট → Excel / CSV","dataA.p":"যেকোনো VB-G RAM G রিপোর্টের টেবিল (জব কার্ড, মাস্টার রোল, ওয়েজ লিস্ট) পরিষ্কার CSV বা JSON-এ নিন — কপি-পেস্ট ছাড়াই, ফাঁকা “গ্রুপ” সেলও পূরণ হয়ে।",
+        "dataB.h3":"জয়েন ও কাস্ট লুকআপ","dataB.p":"দুটি রিপোর্ট একটি সাধারণ কী-তে মিলিয়ে নিন — যেমন রেজিস্ট্রেশন অ্যাপ্লিকেশন রেজিস্টার থেকে প্রতিটি শ্রমিকের কাস্ট যোগ করুন। সংরক্ষিত জয়েন এক ক্লিকে আবার চলে।",
+        "dataC.h3":"ওয়েজ লিস্ট কাস্ট ব্রেকআপ","dataC.p":"যেকোনো ওয়েজ লিস্টে কাস্ট অনুযায়ী টাকার ভাগ (Others / SC / ST) এক-ক্লিক Copy সহ পান — পেজের ওয়েজ লিস্ট মোটের সাথে যাচাই করা।",
         "howinst.h2":"কীভাবে ইনস্টল করবেন (প্রায় এক মিনিট)",
         "inst1.h3":"ডাউনলোড ও আনজিপ","inst1.p":"উপরের ZIP ডাউনলোড করে একটি স্থায়ী ফোল্ডারে আনজিপ করুন, যেমন <code>C:\\VBG\\vbg-cert-autofill</code>।",
         "inst2.h3":"Extensions খুলুন","inst2.p":"Chrome-এ <code>chrome://extensions</code> টাইপ করুন (Edge: <code>edge://extensions</code>) এবং <b>Developer mode</b> চালু করুন।",
@@ -346,6 +364,11 @@
         "card2.h3":"PDF जोड़ता है","card2.p":"एक फ़ोल्डर चुनें; फ़ाइल-नाम में मौजूद 1–8 नंबर से हर PDF अपने ब्लॉक से मिल जाती है। DPR और Convergence अपने-आप Yes सेट हो जाते हैं।",
         "card3.h3":"बड़े स्कैन कंप्रेस करता है","card3.p":"~1 MB सर्वर सीमा से बड़े स्कैन आपके अपने PC पर ही छोटे बनाए जाते हैं ताकि अपलोड हो सकें — किसी ऑनलाइन सेवा पर कुछ नहीं भेजा जाता।",
         "card4.h3":"निजी व ऑफ़लाइन","card4.p":"सब कुछ आपके ब्राउज़र के भीतर चलता है। आपकी जानकारी आपके PC पर ही रहती है, कहीं नहीं भेजी जाती।",
+        "badge.data":"डेटा टूल्स व कास्ट ब्रेकअप",
+        "data.h2":"साथ में शामिल डेटा टूल्स","data.p":"उसी ऐड-ऑन में VB-G RAM G रिपोर्ट के लिए कुछ डेटा टूल — सब आपके ब्राउज़र में ही चलते हैं, कुछ अपलोड नहीं होता।",
+        "dataA.h3":"रिपोर्ट → Excel / CSV","dataA.p":"किसी भी VB-G RAM G रिपोर्ट की टेबल (जॉब कार्ड, मस्टर रोल, वेज लिस्ट) को साफ़ CSV या JSON में लें — बिना कॉपी-पेस्ट, और खाली “ग्रुप” सेल भी भरे हुए।",
+        "dataB.h3":"जॉइन व कास्ट लुकअप","dataB.p":"दो रिपोर्ट को एक कॉमन-की पर जोड़ें — जैसे रजिस्ट्रेशन एप्लिकेशन रजिस्टर से हर श्रमिक की कास्ट जोड़ें। सहेजे गए जॉइन एक क्लिक में फिर चलते हैं।",
+        "dataC.h3":"वेज लिस्ट कास्ट ब्रेकअप","dataC.p":"किसी भी वेज लिस्ट पर कास्ट-वार राशि विभाजन (Others / SC / ST) एक-क्लिक Copy के साथ पाएँ — पेज के वेज लिस्ट कुल से सत्यापित।",
         "howinst.h2":"इंस्टॉल कैसे करें (लगभग एक मिनट)",
         "inst1.h3":"डाउनलोड व अनज़िप","inst1.p":"ऊपर से ZIP डाउनलोड कर एक स्थायी फ़ोल्डर में अनज़िप करें, जैसे <code>C:\\VBG\\vbg-cert-autofill</code>।",
         "inst2.h3":"Extensions खोलें","inst2.p":"Chrome में <code>chrome://extensions</code> टाइप करें (Edge: <code>edge://extensions</code>) और <b>Developer mode</b> चालू करें।",

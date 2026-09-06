@@ -8,6 +8,10 @@ from a folder you pick once. The **DPR** and **Convergence** blocks are set to
 
 No internet tools, no Node, no Python. It is just a small browser add-on.
 
+It also includes **data tools** — export any VB-G RAM G report to CSV/JSON, join
+reports (e.g. add each worker's caste from the Application Register), and a
+**caste-wise wage-list amount breakup** — see **§5** below.
+
 ---
 
 ## 1. Install (do this once, ~1 minute)
@@ -99,6 +103,46 @@ entry, until you change them.
 
 That’s it. The typing of the same details 8 times is gone, and the 8 uploads
 become one folder selection.
+
+---
+
+## 5. Data tools (reports → Excel, join, caste breakup)
+
+Beyond certificate upload, the add-on includes a few **data helpers for VB-G RAM G
+reports**. Everything runs in your browser; nothing is uploaded.
+
+### Extract any report to CSV / JSON
+Toolbar icon → **Extract this page** pulls every table on the current report (job
+cards, muster rolls, wage lists, …) so you can download it as **CSV** (Excel-ready)
+or **JSON**. *Clean* mode (on by default) drops menus/totals/blank rows, keeps one
+proper header, and fills the merged “group” columns (head-of-household, sansad, …)
+so every row is complete.
+
+### Consolidate across tabs (stack or join)
+Toolbar icon → **Consolidate multiple tabs…** opens a page where you can:
+- **Stack** same-shaped tables into one dataset, or
+- **Join** two tables on a key — *exact*, *numeric-id*, *date*, or *fuzzy-name* —
+  e.g. add each worker’s **caste** from the Registration Application Register by
+  **Job Card No.**
+
+Pick and re-order the **output columns**, then download CSV/JSON. **Saved joins**
+remember the pages by URL: when the same report pages are open again, the toolbar
+shows a **↻ badge** and offers a one-click **re-run & export**.
+
+### Wage-list caste breakup (on the wage-list page)
+Open a **Wage List** report. Once it has fully loaded (when *“Download In Excel”*
+appears), a modal shows the wage amount split **caste-wise**:
+`Wagelist No · Oth Amt · SC Amt · ST Amt · Total Amt`, with a **Copy row** button
+(copies the data row only, tab-separated, for pasting into a spreadsheet). The
+total is **validated against the wage-list total on the page** — a mismatch warns
+you the breakup may be incomplete.
+
+Caste comes from the **Registration Application Register**, which the add-on
+**caches once** (locally) the first time you open that register page. If it isn’t
+cached yet, the wage page prompts you to open the register first.
+
+> Caste and beneficiary data are sensitive. The cache lives only in your browser’s
+> local storage and never leaves your PC.
 
 ---
 

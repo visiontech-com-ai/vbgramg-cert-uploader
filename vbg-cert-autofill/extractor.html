@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Consolidate tables across tabs — VB-G RAM G Data Extractor</title>
+<style>
+  :root{--blue:#224aaa;--ink:#1a1f2e;--muted:#5b6472;--line:#c7cfdd;--ok:#137333;--bg:#f4f6fb}
+  *{box-sizing:border-box}
+  body{margin:0;font-family:"Segoe UI",Arial,sans-serif;color:var(--ink);background:var(--bg);font-size:14px}
+  .hd{background:var(--blue);color:#fff;padding:14px 20px;display:flex;align-items:center;gap:12px}
+  .hd svg{flex:0 0 30px}
+  .hd b{font-size:16px}.hd small{display:block;font-size:12px;opacity:.85}
+  .wrap{max-width:1000px;margin:18px auto;padding:0 16px}
+  .card{background:#fff;border:1px solid #e3e8f2;border-radius:12px;padding:16px;margin-bottom:16px}
+  .card h2{margin:0 0 10px;font-size:15px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  .btn{padding:9px 14px;border:0;border-radius:8px;background:var(--blue);color:#fff;font-size:13px;font-weight:600;cursor:pointer}
+  .btn.ghost{background:#eef2fb;color:var(--blue)}
+  .btn:hover{filter:brightness(1.05)}
+  .btn:disabled{opacity:.55;cursor:default;filter:none}
+  input[type=text]{padding:8px 10px;border:1px solid var(--line);border-radius:7px;font-size:13px;min-width:220px}
+  .muted{color:var(--muted);font-size:12.5px}
+  .tablist{max-height:320px;overflow:auto;border:1px solid #eef1f7;border-radius:8px;margin-top:10px}
+  .tab{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border-bottom:1px solid #f1f4fa}
+  .tab:last-child{border-bottom:0}
+  .tab.dis{opacity:.5}
+  .tab input{margin-top:3px}
+  .tab .t{font-weight:600;font-size:13px;word-break:break-word}
+  .tab .u{font-size:11.5px;color:var(--muted);word-break:break-all}
+  .msg{font-size:13px;color:var(--muted);margin:10px 0 0;min-height:16px}
+  .ds{border:1px solid var(--line);border-radius:10px;padding:12px;margin-top:12px}
+  .ds h3{margin:0 0 4px;font-size:14px}
+  .ds .dim{font-size:12px;color:var(--muted);margin-bottom:8px}
+  .ds .acts{display:flex;gap:8px;flex-wrap:wrap}
+  .ds .acts button{padding:7px 12px;border:1px solid var(--line);border-radius:7px;background:#fff;font-size:12.5px;cursor:pointer}
+  .ds .acts button:hover{background:#f5f7fc}
+  .prev{max-height:180px;overflow:auto;margin-top:10px;border-top:1px dashed #e3e8f2;padding-top:8px}
+  .prev table{border-collapse:collapse;font-size:12px}
+  .prev td{border:1px solid #eef1f7;padding:3px 6px;white-space:nowrap;max-width:200px;overflow:hidden;text-overflow:ellipsis}
+  .badge{font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;background:#eef2fb;color:var(--blue);margin-left:6px}
+  .hide{display:none}
+  .modes{display:flex;gap:16px;margin:2px 0 12px}
+  .modes label{font-size:13px;font-weight:600;cursor:pointer}
+  .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .fld label{display:block;font-size:12px;font-weight:600;margin-bottom:3px;color:var(--muted)}
+  select,.fld select{padding:7px 8px;border:1px solid var(--line);border-radius:7px;font-size:13px;background:#fff;max-width:100%}
+  select[multiple]{min-height:84px;width:100%}
+  .keyrow{display:flex;gap:6px;align-items:center;margin-bottom:6px;flex-wrap:wrap}
+  .keyrow select{flex:1;min-width:120px}
+  .keyrow .eq{color:var(--muted);font-size:12px}
+  .krm{border:1px solid var(--line);background:#fff;border-radius:6px;cursor:pointer;padding:4px 9px}
+  .opts{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin:10px 0}
+  .opts label{font-size:13px}
+  details{margin:8px 0}summary{cursor:pointer;font-size:13px;color:var(--blue)}
+  .hint{font-size:12px;color:var(--muted)}
+  .banner{background:#fff8e1;border:1px solid #f4d160;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13px;display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+  .colpick .collist{border:1px solid #eef1f7;border-radius:8px;padding:6px;max-height:220px;overflow:auto;margin-top:6px}
+  .colitem{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:6px;font-size:12.5px;background:#fff}
+  .colitem.dragging{opacity:.5;background:#eef2fb}
+  .colitem .drag{cursor:grab;color:#9aa4b5;user-select:none}
+  .colitem label{display:flex;align-items:center;gap:6px;cursor:pointer;margin:0}
+  .saved{display:flex;align-items:center;gap:8px;font-size:12.5px;padding:6px 0;border-bottom:1px solid #f1f4fa}
+  .saved span{flex:1;color:var(--ink);word-break:break-all}
+  .mini{border:1px solid var(--line);background:#fff;border-radius:6px;padding:3px 9px;font-size:12px;cursor:pointer}
+  .mini:hover{background:#f5f7fc}
+</style>
+</head>
+<body>
+  <div class="hd">
+    <svg width="30" height="30" viewBox="0 0 34 34"><rect width="34" height="34" rx="8" fill="#1b3a86"/><path d="M8 18 l6 6 l12 -14" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <div><b>Consolidate tables across tabs</b><small>VB-G RAM G Data Extractor · everything runs in your browser</small></div>
+  </div>
+
+  <div class="wrap">
+    <div id="banner" class="banner hide"></div>
+    <div class="card">
+      <h2>1 · Choose the tabs to pull from</h2>
+      <div class="row">
+        <button id="loadTabs" class="btn ghost">Load open tabs</button>
+        <input id="filter" type="text" placeholder="Filter by domain or title…">
+        <label class="muted"><input type="checkbox" id="selAll"> Select all shown</label>
+      </div>
+      <div id="tablist" class="tablist hide"></div>
+      <p class="muted" id="tabsHint" style="margin:10px 0 0">Load your open tabs, then tick the report pages you want to combine.
+        Only normal web pages (http/https) can be read.</p>
+    </div>
+
+    <div class="card">
+      <h2>2 · Extract tables</h2>
+      <div class="row">
+        <button id="run" class="btn" disabled>Extract from selected tabs</button>
+        <span class="muted" id="selCount">0 tabs selected</span>
+      </div>
+      <label class="muted" style="display:block;margin-top:8px"><input type="checkbox" id="cleanChk" checked> Clean tables (analysis-ready: drop junk rows, fill group columns, promote section bands)</label>
+      <p class="msg" id="msg"></p>
+    </div>
+
+    <div class="card hide" id="consolidateCard">
+      <h2>3 · Consolidate</h2>
+      <div class="modes">
+        <label><input type="radio" name="mode" value="stack" checked> Stack (append same-shaped tables)</label>
+        <label><input type="radio" name="mode" value="join"> Join (link tables on a key)</label>
+      </div>
+
+      <div id="stackPanel">
+        <p class="hint">Combine tables that share the same columns into one dataset (rows appended, tagged with their source tab).</p>
+        <button id="buildStack" class="btn">Build stacked dataset</button>
+      </div>
+
+      <div id="joinPanel" class="hide">
+        <div class="fgrid">
+          <div class="fld"><label>Left table (kept in full)</label><select id="leftTable"></select></div>
+          <div class="fld"><label>Right table (looked up)</label><select id="rightTable"></select></div>
+        </div>
+        <div style="margin-top:12px">
+          <label class="hint" style="font-weight:600;color:var(--ink)">Match on</label>
+          <div id="keyRows"></div>
+          <button id="addKey" class="btn ghost" style="padding:6px 12px">+ add key</button>
+        </div>
+        <div class="opts">
+          <label><input type="radio" name="jtype" value="left" checked> Keep all left rows</label>
+          <label><input type="radio" name="jtype" value="inner"> Only matches</label>
+          <label><input type="checkbox" id="firstOnly" checked> First match only</label>
+        </div>
+        <details>
+          <summary>Advanced — fill down blank cells before matching</summary>
+          <p class="hint">For reports where a group value (e.g. head-of-household, sansad) prints once and the rows below it are blank.</p>
+          <div class="fgrid">
+            <div class="fld"><label>Left: fill down columns</label><select id="fillLeft" multiple></select></div>
+            <div class="fld"><label>Right: fill down columns</label><select id="fillRight" multiple></select></div>
+          </div>
+        </details>
+        <label class="muted" style="display:block;margin:6px 0"><input type="checkbox" id="rememberChk" checked> Remember this join for these pages (suggest a one-click re-run next time)</label>
+        <button id="runJoin" class="btn">Run join</button>
+      </div>
+      <p class="msg" id="joinMsg"></p>
+    </div>
+
+    <div class="card hide" id="resultsCard">
+      <h2>4 · Results</h2>
+      <p class="hint">Use <b>Choose / reorder columns</b> on a dataset to pick and drag the columns your CSV/JSON export should contain.</p>
+      <div class="row"><button id="dlPdf" class="btn ghost">Download PDF summary</button></div>
+      <div id="sources" class="muted" style="margin-top:10px"></div>
+      <div id="datasets"></div>
+    </div>
+
+    <div class="card">
+      <h2>Saved joins</h2>
+      <p class="hint">When a saved join's pages are open, the toolbar icon shows a ↻ badge and a banner here offers a one-click re-run &amp; export.</p>
+      <div id="savedList" class="muted"></div>
+    </div>
+  </div>
+
+  <script src="lib/jspdf.umd.min.js"></script>
+  <script src="dx-core.js"></script>
+  <script src="extractor.js"></script>
+</body>
+</html>

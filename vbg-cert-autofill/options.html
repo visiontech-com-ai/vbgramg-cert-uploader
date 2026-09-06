@@ -22,6 +22,26 @@
   .saved{font-size:12px;color:var(--ok);height:16px;margin-top:2px;opacity:0;transition:opacity .2s}
   .saved.show{opacity:1}
   .foot{font-size:11.5px;color:var(--muted);border-top:1px solid #eef1f7;margin-top:8px;padding-top:10px;line-height:1.4}
+  .sec{border-top:8px solid #eef1f7}
+  .btn{display:block;width:100%;padding:9px;border:0;border-radius:8px;background:var(--blue);color:#fff;
+    font-size:13px;font-weight:600;cursor:pointer;margin-bottom:8px}
+  .btn.ghost{background:#eef2fb;color:var(--blue)}
+  .btn:hover{filter:brightness(1.05)}
+  .btn:disabled{opacity:.55;cursor:default;filter:none}
+  .dxmsg{font-size:12px;color:var(--muted);min-height:14px;margin:2px 0 6px}
+  .dxt{border:1px solid var(--line);border-radius:8px;padding:8px;margin-bottom:8px}
+  .dxt h4{margin:0 0 4px;font-size:12.5px;display:flex;align-items:center;gap:6px}
+  .badge{font-size:10px;font-weight:700;padding:1px 6px;border-radius:10px;background:#eef2fb;color:var(--blue)}
+  .badge.grid{background:#fdf0e3;color:#9a5a12}
+  .dxt .dim{font-size:11px;color:var(--muted);margin-bottom:6px}
+  .dxt .acts{display:flex;gap:6px}
+  .dxt .acts button{flex:1;padding:6px;border:1px solid var(--line);border-radius:6px;background:#fff;font-size:12px;cursor:pointer}
+  .dxt .acts button:hover{background:#f5f7fc}
+  .prev{max-height:100px;overflow:auto;margin-top:6px;border-top:1px dashed #e3e8f2;padding-top:6px}
+  .prev table{border-collapse:collapse;width:100%;font-size:11px}
+  .prev td{border:1px solid #eef1f7;padding:2px 4px;white-space:nowrap;max-width:120px;overflow:hidden;text-overflow:ellipsis}
+  .pop{background:#fff8e1;border-bottom:1px solid #f4d160;padding:10px 14px;font-size:12.5px}
+  .pbtn{margin-top:6px;padding:6px 10px;border:0;border-radius:7px;background:var(--blue);color:#fff;font-size:12.5px;font-weight:600;cursor:pointer}
 </style>
 </head>
 <body>
@@ -29,6 +49,7 @@
     <svg width="26" height="26" viewBox="0 0 34 34"><rect width="34" height="34" rx="8" fill="#1b3a86"/><path d="M8 18 l6 6 l12 -14" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
     <div><b>Signing authority</b><small>Used for all 8 certificate blocks</small></div>
   </div>
+  <div id="popBanner" class="pop hide"></div>
   <div class="bd">
     <p class="intro">Enter these once. They are saved in this browser and filled
       into every certificate block on the Work Entry page.</p>
@@ -47,6 +68,22 @@
     <div class="foot">Open the <b>Work Entry</b> page to attach the certificate
       PDFs and fill the form — the panel there picks up these details automatically.</div>
   </div>
+
+  <div class="bd sec">
+    <div class="grp" style="margin-bottom:6px">
+      <b style="font-size:13px">Extract table data</b>
+      <p class="intro" style="margin:4px 0 8px">Pull tables &amp; grids from the page you're viewing —
+        download as CSV or JSON. Or consolidate tables across several open tabs into one report.</p>
+    </div>
+    <label style="display:block;font-size:12px;margin:0 0 8px"><input type="checkbox" id="cleanChk" checked> Clean tables (drop junk rows, fill group columns)</label>
+    <button id="scanBtn" class="btn">Extract this page</button>
+    <button id="tabsBtn" class="btn ghost">Consolidate multiple tabs…</button>
+    <div id="dxMsg" class="dxmsg"></div>
+    <div id="dxResults"></div>
+  </div>
+
+  <script src="lib/jspdf.umd.min.js"></script>
+  <script src="dx-core.js"></script>
   <script src="options.js"></script>
 </body>
 </html>

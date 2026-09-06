@@ -84,6 +84,7 @@
     h2{page-break-after:avoid}
     .partB{page-break-before:always}
     .partC{page-break-before:always}
+    .partD{page-break-before:always}
   }
 </style>
 </head>
@@ -96,7 +97,7 @@
     </div>
     <div>
       <h1>Certificate Auto-Fill</h1>
-      <p>VB-G RAM G · Work Entry — install &amp; use guide</p>
+      <p>VB-G RAM G · Work Entry — install, use &amp; data tools</p>
     </div>
     <button class="printbtn" onclick="window.print()">🖨 Print this page</button>
   </div>
@@ -393,6 +394,92 @@
     “too big” and blocks Fill — replace it with a clearer/smaller scan. DPR and
     Convergence are set to Yes for you; if a work truly needs one as No, change it
     on the page and remove that file after filling.
+  </div>
+
+  <!-- ============ PART D : DATA TOOLS ============ -->
+  <div class="partD"></div>
+  <h2>Part D · Data tools (reports → Excel, join, caste breakup)</h2>
+
+  <div class="lead">
+    The same add-on also turns VB-G RAM G <b>reports</b> into clean spreadsheets and
+    shows a <b>caste-wise wage breakup</b>. Everything runs in your browser — nothing
+    is uploaded.
+  </div>
+
+  <div class="step">
+    <div class="n">1</div>
+    <div class="txt">
+      <h3>Export any report to CSV / JSON</h3>
+      <p>Open a report (job cards, muster rolls, a wage list…). Click the extension’s
+      toolbar icon → <b>Extract this page</b>. Every table is pulled out; download it
+      as <b>CSV</b> (opens in Excel) or <b>JSON</b>. <i>Clean</i> mode (on by default)
+      removes menus, totals and blank rows, keeps one proper header, and fills the
+      merged “group” columns (head-of-household, sansad…) so every row is complete.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">2</div>
+    <div class="txt">
+      <h3>Join two reports (e.g. add caste to a list)</h3>
+      <p>Toolbar icon → <b>Consolidate multiple tabs…</b>. Tick the report tabs, choose
+      <b>Join</b>, then pick the two tables and the matching key (Job Card No., dates,
+      or names). Example: add each worker’s <b>caste</b> from the Registration
+      Application Register. Choose which columns to keep, then download CSV/JSON. A
+      <b>saved join</b> re-runs in one click next time — the toolbar shows a <b>↻</b>
+      badge when the same pages are open.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">3</div>
+    <div class="txt">
+      <h3>Cache the Registration Application Register (once)</h3>
+      <p>Open the <b>Registration Application Register</b> page for your GP once. The
+      add-on quietly saves each <b>Job Card → Caste</b> on your PC (a small toast
+      confirms “Caste register saved”). This is what the wage-list breakup uses.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="n">4</div>
+    <div class="txt">
+      <h3>Wage-list caste breakup + Copy</h3>
+      <p>Open a <b>Wage List</b>. When it has loaded (once <b>“Download In Excel”</b>
+      appears) a panel shows the amount split caste-wise —
+      <code>Wagelist No · Oth Amt · SC Amt · ST Amt · Total Amt</code> — with a
+      <b>Copy row</b> button (copies just the figures, tab-separated, to paste into a
+      sheet). The total is <b>checked against the wage-list total on the page</b>; a
+      mismatch warns you it may be incomplete. If the register isn’t cached yet, it
+      asks you to open it first (step 3).</p>
+    </div>
+    <div class="art" style="flex-basis:300px;max-width:300px">
+      <svg viewBox="0 0 300 150">
+        <rect x="4" y="4" width="292" height="142" rx="10" fill="#fff" stroke="#224aaa"/>
+        <rect x="4" y="4" width="292" height="26" rx="10" fill="#1b3a86"/>
+        <text x="14" y="21" font-size="10.5" fill="#fff" font-family="Segoe UI" font-weight="700">Wage list amount breakup — caste-wise</text>
+        <g font-family="Segoe UI" font-size="9" text-anchor="middle">
+          <text x="60" y="52" fill="#1b3a86" font-weight="700">Wagelist No</text>
+          <text x="150" y="52" fill="#1b3a86" font-weight="700">Oth</text>
+          <text x="198" y="52" fill="#1b3a86" font-weight="700">SC</text>
+          <text x="238" y="52" fill="#1b3a86" font-weight="700">ST</text>
+          <text x="278" y="52" fill="#1b3a86" font-weight="700">Total</text>
+          <text x="60" y="70" fill="#1a1f2e">…WL001369</text>
+          <text x="150" y="70" fill="#1a1f2e">3,521</text>
+          <text x="198" y="70" fill="#1a1f2e">5,878</text>
+          <text x="238" y="70" fill="#1a1f2e">16,174</text>
+          <text x="278" y="70" fill="#1a1f2e">25,573</text>
+        </g>
+        <rect x="14" y="84" width="86" height="20" rx="6" fill="#137333"/><text x="57" y="98" font-size="10" fill="#fff" font-family="Segoe UI" text-anchor="middle">📋 Copy row</text>
+        <rect x="14" y="110" width="272" height="18" rx="5" fill="#e6f4ea"/><text x="22" y="123" font-size="9" fill="#137333" font-family="Segoe UI">✓ total matches the wage-list total on the page</text>
+      </svg>
+    </div>
+  </div>
+
+  <div class="note">
+    <b>Privacy.</b> Caste and beneficiary details are sensitive. The register cache is
+    stored only in your browser on this PC and is never uploaded. All extraction,
+    joining and the breakup happen locally.
   </div>
 
   <div class="foot">
